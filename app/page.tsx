@@ -233,165 +233,74 @@ function PerformanceTab() {
   
   return (
     <div className="h-[calc(100vh-140px)]">
-      <div className="bg-white rounded-lg shadow p-4 h-full flex flex-col overflow-y-auto">
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
-          ②業績計画：期初・・・今半期の業績のスタート地点を確認する
-        </h2>
-        <p className="text-xs text-gray-600 mb-4">期中・・・現在地を確認する</p>
-
-        {/* 期ごとの比較表 */}
-        <div className="overflow-x-auto mb-4">
-          <table className="min-w-full divide-y divide-gray-200 text-sm border">
-            <thead>
-              <tr>
-                <th className="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-900 border-r"></th>
-                <th className="px-3 py-2 bg-blue-100 text-center text-xs font-semibold text-gray-900">37下期</th>
-                <th className="px-3 py-2 bg-green-100 text-center text-xs font-semibold text-gray-900">38上期</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              <tr className="bg-white">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">目標数</td>
-                <td className="px-3 py-2 text-right text-xs">80,000</td>
-                <td className="px-3 py-2 text-right text-xs"></td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">現実予</td>
-                <td className="px-3 py-2 text-right text-xs"></td>
-                <td className="px-3 py-2 text-right text-xs"></td>
-              </tr>
-              <tr className="bg-white">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">A主　キャンセルリスクの危険</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">新規提案プランの提案（マイナス表記）</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-              </tr>
-              <tr className="bg-white">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">必要な新規成長件数</td>
-                <td className="px-3 py-2 text-right text-xs">80,000</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">必要な新規案件の目安</td>
-                <td className="px-3 py-2 text-right text-xs">240,000</td>
-                <td className="px-3 py-2 text-right text-xs">0</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-xs text-gray-500 mb-4">
-          ※前期までの他施策の提供単価の目安：240,000
-        </p>
-
-        {/* 顧客別の詳細テーブル */}
-        <div className="space-y-4">
-          {/* キャンセルリスク/ネタ顧客 */}
+      <div className="bg-white rounded-lg shadow p-3 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-sm font-semibold mb-2 bg-red-100 p-2 rounded">
-              キャンセルリスク/ネタ顧客（マイナス表記）
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border text-xs">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={10}>データがありません</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <h2 className="text-base font-bold text-gray-900">②業績計画：期初・・・今半期の業績のスタート地点を確認する</h2>
+            <p className="text-[10px] text-gray-600">期中・・・現在地を確認する</p>
           </div>
-
-          {/* A主 */}
-          <div>
-            <h3 className="text-sm font-semibold mb-2 bg-green-100 p-2 rounded">A主</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border text-xs">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={10}>データがありません</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* B・C・ネタ */}
-          <div>
-            <h3 className="text-sm font-semibold mb-2 bg-orange-100 p-2 rounded">フラグ　B・C・ネタ</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border text-xs">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">フラグ</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">フラグ</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
-                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={12}>データがありません</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            <div className="mt-2 flex justify-end space-x-4 text-xs">
-              <span>合計：<span className="font-semibold">0</span></span>
-              <span>フラグ委任中の合計：<span className="font-semibold">0</span></span>
-              <span>フラグ委任中の合計：<span className="font-semibold">0</span></span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-4 flex justify-end">
           <button 
             onClick={saveData}
-            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             保存
           </button>
+        </div>
+
+        {/* コンパクトな概観テーブル */}
+        <div className="mb-2 overflow-x-auto">
+          <table className="w-full text-[10px] border-collapse border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-2 py-1 text-left font-medium">項目</th>
+                <th className="border px-2 py-1 text-center font-medium bg-blue-50">37下期</th>
+                <th className="border px-2 py-1 text-center font-medium bg-green-50">38上期</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td className="border px-2 py-0.5 font-medium">目標数</td><td className="border px-2 py-0.5 text-right">80,000</td><td className="border px-2 py-0.5 text-right"></td></tr>
+              <tr><td className="border px-2 py-0.5">現実予</td><td className="border px-2 py-0.5 text-right"></td><td className="border px-2 py-0.5 text-right"></td></tr>
+              <tr><td className="border px-2 py-0.5">A主 キャンセルリスク</td><td className="border px-2 py-0.5 text-right">0</td><td className="border px-2 py-0.5 text-right">0</td></tr>
+              <tr><td className="border px-2 py-0.5">新規提案プラン（マイナス表記）</td><td className="border px-2 py-0.5 text-right">0</td><td className="border px-2 py-0.5 text-right">0</td></tr>
+              <tr><td className="border px-2 py-0.5 font-medium">必要な新規提案件数</td><td className="border px-2 py-0.5 text-right font-medium">80,000</td><td className="border px-2 py-0.5 text-right">0</td></tr>
+              <tr><td className="border px-2 py-0.5">必要な新規案件の目安</td><td className="border px-2 py-0.5 text-right">240,000</td><td className="border px-2 py-0.5 text-right">0</td></tr>
+            </tbody>
+          </table>
+          <p className="text-[9px] text-gray-500 mt-1">※前期までの他施策の提供単価の目安：240,000</p>
+        </div>
+
+        {/* 案件リスト - 横スクロール */}
+        <div className="flex-1 overflow-auto border-t pt-2">
+          <div className="grid grid-cols-3 gap-2 min-h-full">
+            {/* キャンセルリスク/ネタ */}
+            <div className="border rounded p-2 bg-red-50/30">
+              <h3 className="text-[11px] font-semibold mb-1 text-red-800">キャンセルリスク/ネタ（マイナス表記）</h3>
+              <div className="space-y-1 text-[10px] text-gray-500">
+                <p>CSVで読み込み後、リスト表示</p>
+              </div>
+            </div>
+
+            {/* A主 */}
+            <div className="border rounded p-2 bg-green-50/30">
+              <h3 className="text-[11px] font-semibold mb-1 text-green-800">A主</h3>
+              <div className="space-y-1 text-[10px] text-gray-500">
+                <p>CSVで読み込み後、リスト表示</p>
+              </div>
+            </div>
+
+            {/* B・C・ネタ */}
+            <div className="border rounded p-2 bg-orange-50/30">
+              <h3 className="text-[11px] font-semibold mb-1 text-orange-800">B・C・ネタ</h3>
+              <div className="space-y-1 text-[10px] text-gray-500">
+                <p>CSVで読み込み後、リスト表示</p>
+                <div className="mt-2 pt-1 border-t text-[9px] space-y-0.5">
+                  <div>合計：<span className="font-semibold">0</span></div>
+                  <div>フラグB合計：<span className="font-semibold">0</span></div>
+                  <div>フラグC合計：<span className="font-semibold">0</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -556,88 +465,138 @@ function FocusTab() {
 function BaseTab() {
   const { saveData } = useStore();
   const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
+  
+  // サンプル顧客データ
+  const [customers, setCustomers] = React.useState([
+    {
+      id: 1,
+      name: "株）グローバルシステムズ",
+      salesCount: "2,000",
+      yearTotal: "5,000",
+      term37: "11,000",
+      term38: "19,000",
+      currentStatus: "人事部長からHRシステム刷新の検討を進めたいという意向あり（感触良好）",
+      measures: "・定例報告会・研修実施\n・情報収集（新人入社予定人数・管理職研修ニーズ）",
+      focus: "・情報収集を通じて全社ニーズを把握\n・カウンターパートとの信頼関係構築",
+      monthlyPlans: {}
+    }
+  ]);
 
   return (
     <div className="h-[calc(100vh-140px)]">
-      <div className="bg-white rounded-lg shadow p-4 h-full flex flex-col">
-        <h2 className="text-lg font-bold text-gray-900 mb-3">④重点外顧客の活動計画</h2>
-
-        <div className="flex-1 overflow-auto border rounded">
-          <table className="min-w-full divide-y divide-gray-200 text-xs">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 sticky left-0 bg-gray-50 z-10 border-r">社名</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">担当営業数</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">年度累計</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">37下期</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">38上期</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">現状認識</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">施策</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 border-r">活動焦点</th>
-                {months.map((month) => (
-                  <React.Fragment key={month}>
-                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 bg-blue-50">{month}<br/>行動予定</th>
-                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 bg-green-50 border-r">{month}<br/>振り返り</th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr className="hover:bg-gray-50">
-                <td className="px-2 py-2 text-xs font-medium sticky left-0 bg-white border-r">株）グローバルシステムズ</td>
-                <td className="px-2 py-2 text-xs">2,000</td>
-                <td className="px-2 py-2 text-xs">5,000</td>
-                <td className="px-2 py-2 text-xs">11,000</td>
-                <td className="px-2 py-2 text-xs">19,000</td>
-                <td className="px-2 py-2 text-xs max-w-xs">
-                  人事部長からHRシステム刷新の検討を進めたいという意向あり（感触良好）
-                </td>
-                <td className="px-2 py-2 text-xs">
-                  ・定例報告会・研修実施<br/>
-                  ・情報収集（新人入社予定人数・管理職研修ニーズ）<br/>
-                  ＜面談＞<br/>
-                  ・年代別キャリア研修提案
-                </td>
-                <td className="px-2 py-2 text-xs border-r">
-                  ・情報収集を通じて全社ニーズを把握<br/>
-                  ・カウンターパートとの信頼関係構築と定期的な情報提供を継続
-                </td>
-                {months.map((month) => (
-                  <React.Fragment key={month}>
-                    <td className="px-2 py-2 text-xs bg-blue-50/30">
-                      <textarea 
-                        className="w-32 h-16 p-1 text-xs border border-gray-300 rounded resize-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="行動予定を入力"
-                      />
-                    </td>
-                    <td className="px-2 py-2 text-xs bg-green-50/30 border-r">
-                      <textarea 
-                        className="w-32 h-16 p-1 text-xs border border-gray-300 rounded resize-none focus:ring-1 focus:ring-green-500"
-                        placeholder="振り返りを入力"
-                      />
-                    </td>
-                  </React.Fragment>
-                ))}
-              </tr>
-              <tr>
-                <td className="px-2 py-4 text-xs text-center text-gray-400" colSpan={20}>
-                  他の顧客データはCSV読み込み後に表示されます
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <div className="bg-white rounded-lg shadow p-3 h-full flex flex-col">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-base font-bold text-gray-900">④重点外顧客の活動計画</h2>
+          <div className="flex space-x-2">
+            <button className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700">
+              CSV読み込み
+            </button>
+            <button 
+              onClick={saveData}
+              className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              保存
+            </button>
+          </div>
         </div>
 
-        <div className="mt-3 flex justify-end space-x-2 flex-shrink-0">
-          <button className="px-4 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
-            CSV読み込み
-          </button>
-          <button 
-            onClick={saveData}
-            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            保存
-          </button>
+        {/* 顧客リスト - カード形式 */}
+        <div className="flex-1 overflow-auto space-y-2">
+          {customers.map((customer) => (
+            <div key={customer.id} className="border rounded-lg p-2 hover:shadow-md transition-shadow">
+              {/* 顧客基本情報 */}
+              <div className="grid grid-cols-12 gap-2 text-[10px] mb-2 pb-2 border-b">
+                <div className="col-span-2">
+                  <label className="text-gray-500 block mb-0.5">社名</label>
+                  <input 
+                    type="text" 
+                    value={customer.name}
+                    onChange={(e) => {
+                      const newCustomers = [...customers];
+                      newCustomers[customer.id - 1].name = e.target.value;
+                      setCustomers(newCustomers);
+                    }}
+                    className="w-full px-1 py-0.5 border rounded text-[10px] font-medium"
+                  />
+                </div>
+                <div className="col-span-1">
+                  <label className="text-gray-500 block mb-0.5">担当営業数</label>
+                  <input type="text" value={customer.salesCount} className="w-full px-1 py-0.5 border rounded text-right" />
+                </div>
+                <div className="col-span-1">
+                  <label className="text-gray-500 block mb-0.5">年度累計</label>
+                  <input type="text" value={customer.yearTotal} className="w-full px-1 py-0.5 border rounded text-right" />
+                </div>
+                <div className="col-span-1">
+                  <label className="text-gray-500 block mb-0.5">37下期</label>
+                  <input type="text" value={customer.term37} className="w-full px-1 py-0.5 border rounded text-right" />
+                </div>
+                <div className="col-span-1">
+                  <label className="text-gray-500 block mb-0.5">38上期</label>
+                  <input type="text" value={customer.term38} className="w-full px-1 py-0.5 border rounded text-right" />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-500 block mb-0.5">現状認識</label>
+                  <textarea 
+                    value={customer.currentStatus}
+                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                    rows={2}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-500 block mb-0.5">施策</label>
+                  <textarea 
+                    value={customer.measures}
+                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                    rows={2}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-500 block mb-0.5">活動焦点</label>
+                  <textarea 
+                    value={customer.focus}
+                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              {/* 月次計画 - 横スクロール */}
+              <div className="overflow-x-auto">
+                <div className="flex gap-2 min-w-max">
+                  {months.map((month) => (
+                    <div key={month} className="w-48 flex-shrink-0">
+                      <div className="text-[10px] font-semibold mb-1 text-center bg-gray-100 py-0.5 rounded">{month}</div>
+                      <div className="grid grid-cols-2 gap-1">
+                        <div>
+                          <label className="text-[9px] text-gray-500 block mb-0.5">行動予定</label>
+                          <textarea 
+                            className="w-full px-1 py-0.5 text-[9px] border rounded bg-blue-50/30 resize-none"
+                            rows={3}
+                            placeholder="予定を入力"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-gray-500 block mb-0.5">振り返り</label>
+                          <textarea 
+                            className="w-full px-1 py-0.5 text-[9px] border rounded bg-green-50/30 resize-none"
+                            rows={3}
+                            placeholder="振り返りを入力"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {customers.length === 0 && (
+            <div className="text-center py-8 text-gray-400 text-sm">
+              CSV読み込み後、顧客データが表示されます
+            </div>
+          )}
         </div>
       </div>
     </div>
