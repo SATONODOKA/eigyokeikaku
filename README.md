@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 営業計画管理システム
 
-## Getting Started
+営業計画と顧客関係のマネジメントシステム。Salesforce SPAとExcelの併用による分断を解消し、数字と関係性を同じ文脈で扱える設計デスク。
 
-First, run the development server:
+## 主な機能
+
+### 4つのタブ構成
+
+#### ①目指す姿（Vision）
+- 前期振り返り（できたこと・できなかったこと）
+- 今後目指したい姿（1〜3年のレンジで）
+- 個人としての今期の意味づけ
+- 今期出したい成果・取り組み・こだわり
+
+#### ②業績計画（Performance）
+- SPA案件管理データの表示
+- 期別の業績目標と現在地の確認
+- A主・B・C・キャンセルリスク別の案件管理
+
+#### ③重点顧客の活動計画（Focus）
+**革新的な2カラムレイアウト**
+- **左側（1/3幅）**：過去イベント・活動履歴（常時表示）
+- **右側（2/3幅）**：計画入力エリア
+- **作業フロー**：左の履歴を見ながら右に計画を記入する自然な体験
+
+特徴：
+- 最大5社の重点顧客管理
+- 関係性レベル選択
+- 定量目標・定性目標
+- 月次計画（10月〜3月）
+- 今期の振り返り
+- イベント・活動履歴（CSV自動反映 + 手動追加）
+
+#### ④重点外顧客の活動計画（Base）
+- 一覧表形式での管理
+- 社名・担当営業数・年度累計・期別数字
+- 現状認識・施策・活動焦点
+
+## 技術スタック
+
+- **Frontend**: Next.js 14 + React + TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Data Persistence**: localStorage（自動保存）
+- **CSV Parsing**: PapaParse（予定）
+
+## UI/UXの特徴
+
+### 体験設計の徹底
+- **過去を見ながら未来を計画する**：③重点顧客タブの2カラムレイアウト
+- **余白の最適化**：無駄な空白を削減し、実際に書く領域を最大化
+- **入力欄の拡大**：実用的なサイズで快適に記入できる
+- **画面高さの活用**：ビューポート全体を使用
+
+### レスポンシブデザイン
+- 画面の高さに合わせた自動調整
+- スクロール可能なレイアウト
+- 固定ヘッダー（④タブ）
+
+## セットアップ
 
 ```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 でアクセス
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## データ管理
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **自動保存**：入力内容は自動的にlocalStorageに保存
+- **データ永続化**：ページをリロードしてもデータが保持される
+- **タブ状態の保存**：最後に開いていたタブを記憶
 
-## Learn More
+## 今後の拡張予定
 
-To learn more about Next.js, take a look at the following resources:
+1. **CSV連携**
+   - SPA案件管理データの読み込み
+   - 年間イベントCSVの自動反映
+   - 受注履歴CSVの自動反映
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **データエクスポート**
+   - JSON/CSVでのダウンロード
+   - PDFレポート生成
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **外部連携**
+   - Salesforce API連携
+   - Google Calendar/Outlook同期
 
-## Deploy on Vercel
+4. **チーム機能**
+   - マネジャー閲覧機能
+   - 共有・コメント機能
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ライセンス
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

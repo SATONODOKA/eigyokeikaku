@@ -63,7 +63,7 @@ export default function Home() {
       </nav>
 
       {/* メインコンテンツ */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="w-full px-4 py-4">
         {activeTab === "vision" && <VisionTab />}
         {activeTab === "performance" && <PerformanceTab />}
         {activeTab === "focus" && <FocusTab />}
@@ -78,8 +78,8 @@ function VisionTab() {
   const { visionData, updateVisionData, saveData } = useStore();
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
+    <div className="h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-lg shadow p-4 h-full overflow-y-auto">
         <h2 className="text-xl font-bold text-gray-900 mb-4">
           ①目指す姿：自身の現状とこれからを展望する
         </h2>
@@ -88,9 +88,9 @@ function VisionTab() {
         </p>
 
         {/* 使う上でのポイント */}
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-semibold mb-2">使う上でのポイント</h3>
-          <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <h3 className="font-semibold mb-1.5 text-sm">使う上でのポイント</h3>
+          <ul className="text-xs text-gray-700 space-y-0.5 list-disc list-inside">
             <li>慣れないうちは、まず今の手帳で考えてみることといたいか大事。さらりてもかまわないので、書いてみる。</li>
             <li>必要に応じて、Mgrの力借りながら書いてみてください。</li>
             <li>期中にときどき、読み返す。自分の前のことに追われ、やらされ感が湧いているときに、抜け出すキッカケになる。かもしれない。</li>
@@ -98,15 +98,15 @@ function VisionTab() {
         </div>
 
         {/* ありたい姿と目指したこと */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <div>
-            <h3 className="font-semibold mb-2">先半期の振り返り</h3>
+            <h3 className="font-semibold mb-2 text-sm">先半期の振り返り</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">できたこと</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">できたこと</label>
                 <textarea
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={4}
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  rows={6}
                   placeholder="前期に達成できたことを記入してください"
                   value={visionData.achieved}
                   onChange={(e) => updateVisionData({ achieved: e.target.value })}
@@ -115,13 +115,13 @@ function VisionTab() {
             </div>
           </div>
           <div>
-            <h3 className="font-semibold mb-2 opacity-0">　</h3>
+            <h3 className="font-semibold mb-2 text-sm opacity-0">　</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">できなかったこと</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">できなかったこと</label>
                 <textarea
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={4}
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  rows={6}
                   placeholder="前期にできなかったことを記入してください"
                   value={visionData.notAchieved}
                   onChange={(e) => updateVisionData({ notAchieved: e.target.value })}
@@ -132,13 +132,13 @@ function VisionTab() {
         </div>
 
         {/* 今後目指したい姿 */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-4">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             今後目指したい姿（1〜3年のいゆるレンジで）／キャリアの方向性
           </label>
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={4}
+            className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+            rows={5}
             placeholder="将来的に目指したい姿を記入してください"
             value={visionData.futureGoal}
             onChange={(e) => updateVisionData({ futureGoal: e.target.value })}
@@ -146,13 +146,13 @@ function VisionTab() {
         </div>
 
         {/* 個人としての今期の意味づけ */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-4">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             個人としての今期の意味づけ
           </label>
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={4}
+            className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+            rows={5}
             placeholder="今期の意味づけを記入してください"
             value={visionData.termMeaning}
             onChange={(e) => updateVisionData({ termMeaning: e.target.value })}
@@ -160,38 +160,38 @@ function VisionTab() {
         </div>
 
         {/* 下部の3つのボックス */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               今期出したい成果（定量・定性・それられ書いてみましょう）
             </label>
             <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={6}
+              className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+              rows={8}
               placeholder="成果目標を記入してください"
               value={visionData.quantitativeGoal}
               onChange={(e) => updateVisionData({ quantitativeGoal: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               今期取り組みたいこと（やること）
             </label>
             <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={6}
+              className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+              rows={8}
               placeholder="取り組みたいことを記入してください"
               value={visionData.qualitativeGoal}
               onChange={(e) => updateVisionData({ qualitativeGoal: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               今期こだわりたいこと（スタンス）
             </label>
             <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={6}
+              className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+              rows={8}
               placeholder="こだわりポイントを記入してください"
               value={visionData.stance}
               onChange={(e) => updateVisionData({ stance: e.target.value })}
@@ -200,13 +200,13 @@ function VisionTab() {
         </div>
 
         {/* グループメンバーに期待つてほしい観点 */}
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mt-4">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             グループメンバーに期待つてほしい観点
           </label>
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows={3}
+            className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+            rows={4}
             placeholder="メンバーに期待することを記入してください"
             value={visionData.memberExpectations}
             onChange={(e) => updateVisionData({ memberExpectations: e.target.value })}
@@ -389,20 +389,20 @@ function PerformanceTab() {
 
 // Focus タブ
 function FocusTab() {
-  const { focusCustomers, selectedCustomerIndex, setSelectedCustomerIndex } = useStore();
+  const { focusCustomers, selectedCustomerIndex, setSelectedCustomerIndex, saveData } = useStore();
   const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow">
+    <div className="h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-lg shadow h-full flex flex-col">
         {/* 顧客タブ */}
-        <div className="border-b">
-          <div className="flex space-x-1 px-6 pt-4">
+        <div className="border-b flex-shrink-0">
+          <div className="flex space-x-1 px-4 pt-3">
             {focusCustomers.map((customer, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedCustomerIndex(index)}
-                className={`px-4 py-2 rounded-t-lg font-medium text-sm ${
+                className={`px-3 py-1.5 rounded-t-lg font-medium text-sm ${
                   selectedCustomerIndex === index
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -414,125 +414,126 @@ function FocusTab() {
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
-          <h2 className="text-xl font-bold text-gray-900">③重点顧客の活動計画</h2>
-
-          {/* 関係性レベル選択 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              関係性レベル
-            </label>
-            <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>レベル1：面識あり</option>
-              <option>レベル2：定期的な接点</option>
-              <option>レベル3：信頼関係構築</option>
-              <option>レベル4：戦略的パートナー</option>
-            </select>
-          </div>
-
-          {/* 今期の目標 */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                定量目標
-              </label>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="例：売上 5,000万円"
-              />
+        {/* 2カラムレイアウト */}
+        <div className="flex-1 grid grid-cols-3 gap-0 overflow-hidden">
+          {/* 左側：過去イベント履歴（1/3幅） */}
+          <div className="border-r flex flex-col overflow-hidden">
+            <div className="p-3 border-b bg-gray-50 flex-shrink-0">
+              <h3 className="font-semibold text-sm">過去イベント・活動履歴</h3>
+              <p className="text-xs text-gray-500 mt-1">これを見ながら右側に計画を記入→</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                定性目標
-              </label>
-              <input
-                type="text"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="例：役員との関係構築"
-              />
-            </div>
-          </div>
-
-          {/* 月次計画 */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">月次計画</h3>
-            <div className="space-y-4">
-              {months.map((month) => (
-                <div key={month} className="border rounded-lg p-4 bg-gray-50">
-                  <h4 className="font-semibold mb-2">{month}</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        目標・アクション
-                      </label>
-                      <textarea
-                        className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={2}
-                        placeholder="この月の目標とアクションを記入"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">
-                        振り返り
-                      </label>
-                      <textarea
-                        className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={2}
-                        placeholder="月末に振り返りを記入"
-                      />
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {/* サンプルイベント */}
+              <div className="border rounded p-2 bg-white text-xs">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-semibold">2024/09/15</span>
+                  <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-xs">研修</span>
                 </div>
-              ))}
+                <p className="text-gray-700">新人研修実施（参加者12名）</p>
+              </div>
+              <div className="border rounded p-2 bg-white text-xs">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-semibold">2024/08/20</span>
+                  <span className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-xs">提案</span>
+                </div>
+                <p className="text-gray-700">人事システム刷新の提案実施</p>
+              </div>
+              <div className="border rounded p-2 bg-white text-xs">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-semibold">2024/07/10</span>
+                  <span className="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded text-xs">報告会</span>
+                </div>
+                <p className="text-gray-700">第2四半期実績報告会</p>
+              </div>
+              <div className="text-center text-gray-400 text-xs mt-4 py-4 border-t">
+                CSV読み込みで自動反映されます
+              </div>
             </div>
-          </div>
-
-          {/* 今期の振り返り */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              今期の振り返り（期末に記入）
-            </label>
-            <textarea
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={4}
-              placeholder="期末に今期全体の振り返りを記入してください"
-            />
-          </div>
-
-          {/* イベント一覧 */}
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-semibold">イベント・活動履歴</h3>
-              <button className="px-4 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">
-                + 手動追加
+            <div className="p-2 border-t bg-gray-50 flex-shrink-0">
+              <button className="w-full px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700">
+                + イベント手動追加
               </button>
             </div>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">日付</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">種類</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">内容</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">ソース</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-4 py-2 text-sm" colSpan={4}>
-                      イベントデータがありません（CSV読み込み後に自動反映されます）
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
           </div>
 
-          <div className="flex justify-end">
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              保存
-            </button>
+          {/* 右側：計画入力エリア（2/3幅） */}
+          <div className="col-span-2 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <h2 className="text-lg font-bold text-gray-900">③重点顧客の活動計画</h2>
+
+              {/* 基本情報 */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">関係性レベル</label>
+                  <select className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500">
+                    <option>レベル1：面識あり</option>
+                    <option>レベル2：定期的な接点</option>
+                    <option>レベル3：信頼関係構築</option>
+                    <option>レベル4：戦略的パートナー</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">定量目標</label>
+                  <input
+                    type="text"
+                    className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    placeholder="例：売上 5,000万円"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">定性目標</label>
+                  <input
+                    type="text"
+                    className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                    placeholder="例：役員との関係構築"
+                  />
+                </div>
+              </div>
+
+              {/* 月次計画（コンパクトに） */}
+              <div>
+                <h3 className="text-sm font-semibold mb-2">月次計画</h3>
+                <div className="space-y-2">
+                  {months.map((month) => (
+                    <div key={month} className="border rounded p-2 bg-gray-50">
+                      <div className="font-semibold text-sm mb-1.5">{month}</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <textarea
+                          className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                          rows={3}
+                          placeholder="目標・アクション"
+                        />
+                        <textarea
+                          className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                          rows={3}
+                          placeholder="振り返り"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 今期の振り返り */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">今期の振り返り（期末に記入）</label>
+                <textarea
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                  rows={4}
+                  placeholder="期末に今期全体の振り返りを記入してください"
+                />
+              </div>
+            </div>
+
+            {/* 保存ボタン */}
+            <div className="p-3 border-t bg-gray-50 flex justify-end flex-shrink-0">
+              <button 
+                onClick={saveData}
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                保存
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -542,62 +543,65 @@ function FocusTab() {
 
 // Base タブ
 function BaseTab() {
-  return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">④重点外顧客の活動計画</h2>
+  const { saveData } = useStore();
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 border">
-            <thead className="bg-gray-50">
+  return (
+    <div className="h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-lg shadow p-4 h-full flex flex-col">
+        <h2 className="text-lg font-bold text-gray-900 mb-3">④重点外顧客の活動計画</h2>
+
+        <div className="flex-1 overflow-auto border rounded">
+          <table className="min-w-full divide-y divide-gray-200 text-xs">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">社名</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">担当営業数</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">年度（累計ベースより）</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">今期終了予算の37下期数字</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">今期終了予算の38上期数字</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">ひな状況になっていればOK？</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">今後への向け・施策</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">活動の焦点</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">社名</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">担当営業数</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">年度累計</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">37下期</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">38上期</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">現状認識</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">施策</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">活動焦点</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-4 py-3 text-sm">株）某和巧システムズ株式会社</td>
-                <td className="px-4 py-3 text-sm">2,000</td>
-                <td className="px-4 py-3 text-sm">5,000</td>
-                <td className="px-4 py-3 text-sm">11,000</td>
-                <td className="px-4 py-3 text-sm">19,000</td>
-                <td className="px-4 py-3 text-sm">
+              <tr className="hover:bg-gray-50">
+                <td className="px-2 py-2 text-xs font-medium">株）某和巧システムズ株式会社</td>
+                <td className="px-2 py-2 text-xs">2,000</td>
+                <td className="px-2 py-2 text-xs">5,000</td>
+                <td className="px-2 py-2 text-xs">11,000</td>
+                <td className="px-2 py-2 text-xs">19,000</td>
+                <td className="px-2 py-2 text-xs max-w-xs">
                   人事部長からSRMSに移らな触実施されるいう触感がある（感覚の営業先らあるてもる）
                 </td>
-                <td className="px-4 py-3 text-sm">
+                <td className="px-2 py-2 text-xs">
                   ・ドンド採用品・報告会<br/>
                   ・情報収動（新人入中超2&amp;上・割任マネガー）<br/>
                   ＜面談＞<br/>
                   ・年代惑士エツクげ経費
                 </td>
-                <td className="px-4 py-3 text-sm">
+                <td className="px-2 py-2 text-xs">
                   ・情報収取支者確認の会全体需要をスヌす行<br/>
                   ・ガウンナード②の入通実数との情報昭的な情報提供で講している計叫す行け
                 </td>
               </tr>
               <tr>
-                <td className="px-4 py-3 text-sm" colSpan={8}>
-                  <div className="text-center text-gray-500 py-4">
-                    他の顧客データはCSV読み込み後に表示されます
-                  </div>
+                <td className="px-2 py-4 text-xs text-center text-gray-400" colSpan={8}>
+                  他の顧客データはCSV読み込み後に表示されます
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div className="mt-6 flex justify-end space-x-3">
-          <button className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+        <div className="mt-3 flex justify-end space-x-2 flex-shrink-0">
+          <button className="px-4 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
             CSV読み込み
           </button>
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <button 
+            onClick={saveData}
+            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             保存
           </button>
         </div>
