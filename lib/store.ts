@@ -102,6 +102,8 @@ interface AppState {
   deleteBaseCustomer: (index: number) => void;
   updatePerformanceData: (data: Partial<PerformanceData>) => void;
   saveData: () => void;
+  exportData: () => void;
+  importData: (jsonString: string) => void;
 }
 
 // IndexedDB用のカスタムストレージ
@@ -260,6 +262,52 @@ export const useStore = create<AppState>()(
       saveData: () => {
         console.log('データをIndexedDBに保存しました');
         alert('データを保存しました');
+      },
+
+      exportData: () => {
+        const state = get();
+        const exportData = {
+          visionData: state.visionData,
+          performanceData: state.performanceData,
+          focusCustomers: state.focusCustomers,
+          baseCustomers: state.baseCustomers,
+          spaFileName: state.spaFileName,
+          torenaviFileName: state.torenaviFileName,
+          exportDate: new Date().toISOString(),
+        };
+        
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `eigyokeikaku_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('データをエクスポートしました');
+        alert('バックアップファイルをダウンロードしました');
+      },
+
+      importData: (jsonString: string) => {
+        try {
+          const importedData = JSON.parse(jsonString);
+          set({
+            visionData: importedData.visionData || get().visionData,
+            performanceData: importedData.performanceData || get().performanceData,
+            focusCustomers: importedData.focusCustomers || get().focusCustomers,
+            baseCustomers: importedData.baseCustomers || get().baseCustomers,
+            spaFileName: importedData.spaFileName || get().spaFileName,
+            torenaviFileName: importedData.torenaviFileName || get().torenaviFileName,
+          });
+          console.log('データをインポートしました');
+          alert('バックアップファイルを読み込みました');
+        } catch (error) {
+          console.error('インポートエラー:', error);
+          alert('ファイルの読み込みに失敗しました');
+        }
       },
     }),
     {

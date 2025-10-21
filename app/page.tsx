@@ -1112,11 +1112,12 @@ function BaseTab() {
 // Secondary: #3B8FA3 (深い青緑)
 // Accent: #52B788 (トレナビグリーン)
 function HomeTab() {
-  const { spaFileName, torenaviFileName, setActiveTab, setCSVFiles } = useStore();
+  const { spaFileName, torenaviFileName, setActiveTab, setCSVFiles, exportData, importData } = useStore();
   const [spaFile, setSpaFile] = React.useState<File | null>(null);
   const [torenaviFile, setTorenaviFile] = React.useState<File | null>(null);
   const spaInputRef = React.useRef<HTMLInputElement>(null);
   const torenaviInputRef = React.useRef<HTMLInputElement>(null);
+  const backupInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleSpaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1145,6 +1146,20 @@ function HomeTab() {
       // TODO: CSV処理ロジックを実装
       alert('データの読み込みを開始します\n（現在は機能未実装）');
       setActiveTab('vision');
+    }
+  };
+
+  const handleBackupImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.name.endsWith('.json')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const jsonString = event.target?.result as string;
+        importData(jsonString);
+      };
+      reader.readAsText(file);
+    } else if (file) {
+      alert('JSONファイルを選択してください');
     }
   };
 
@@ -1228,8 +1243,48 @@ function HomeTab() {
             {canExecute ? '実行' : '2つのCSVファイルを選択してください'}
           </button>
 
-          {/* 注意書き */}
+          {/* バックアップ機能 */}
           <div className="pt-6 mt-8 border-t border-gray-200">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">📁 データのバックアップ</h3>
+            <div className="grid grid-cols-2 gap-3 max-w-xl mx-auto">
+              {/* エクスポート */}
+              <button
+                onClick={exportData}
+                className="py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 bg-cyan-600 text-white hover:bg-cyan-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>バックアップを保存</span>
+              </button>
+
+              {/* インポート */}
+              <div>
+                <input
+                  ref={backupInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleBackupImport}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => backupInputRef.current?.click()}
+                  className="w-full py-3 px-4 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2 bg-green-600 text-white hover:bg-green-700"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                  <span>バックアップから復元</span>
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 text-center mt-3">
+              定期的にバックアップを保存し、ローカルフォルダに保管することをお勧めします
+            </p>
+          </div>
+
+          {/* 注意書き */}
+          <div className="pt-4 mt-6">
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
