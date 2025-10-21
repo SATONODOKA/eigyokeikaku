@@ -7,42 +7,32 @@ echo ========================================
 echo   営業計画管理システム
 echo ========================================
 echo.
-echo サーバーを起動しています...
-echo.
 
-REM Node.jsがインストールされているか確認
-where node >nul 2>&1
-if %errorlevel% neq 0 (
-    echo.
-    echo ========================================
-    echo   ❌ Node.jsがインストールされていません
-    echo ========================================
-    echo.
-    echo 初回起動の前に「セットアップ.bat」を実行してください。
-    echo.
-    echo セットアップ.batがNode.jsのインストール方法を案内します。
-    echo.
-    echo ※ このウィンドウを閉じて、
-    echo    「セットアップ.bat」をダブルクリックしてください
-    echo.
-    pause
-    exit /b 1
-)
+REM カレントディレクトリを取得
+set CURRENT_DIR=%~dp0
+set NODE_DIR=%CURRENT_DIR%nodejs-portable
+set NODE_EXE=%NODE_DIR%\node.exe
+set NPM_CMD=%NODE_DIR%\npm.cmd
+
+REM PATHを設定
+set PATH=%NODE_DIR%;%PATH%
 
 REM node_modulesが存在しない場合はインストール
 if not exist "node_modules\" (
     echo 初回起動：依存関係をインストールしています...
     echo これには数分かかります。お待ちください...
     echo.
-    call npm install
+    call "%NPM_CMD%" install
     if %errorlevel% neq 0 (
         echo.
         echo [エラー] インストールに失敗しました。
+        echo インターネット接続を確認してください。
+        echo.
         pause
         exit /b 1
     )
     echo.
-    echo インストール完了！
+    echo ✅ インストール完了！
     echo.
 )
 
@@ -60,5 +50,4 @@ timeout /t 3 /nobreak >nul
 start http://localhost:3000
 
 REM サーバー起動
-npm run dev
-
+call "%NPM_CMD%" run dev
