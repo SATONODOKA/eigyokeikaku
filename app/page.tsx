@@ -84,16 +84,16 @@ function VisionTab() {
           ①目指す姿：自身の現状とこれからを展望する
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          今からはじまる営業計画。単なる目標達成やMustをやりきるための計画に終わらず、自分や営業さきの未来にとって意味あるもののにしましょう。
+          今からはじまる営業計画。単なる目標達成やMustをやりきるための計画に終わらず、自分や営業先の未来にとって意味あるものにしましょう。
         </p>
 
         {/* 使う上でのポイント */}
         <div className="mb-4 p-3 bg-blue-50 rounded-lg">
           <h3 className="font-semibold mb-1.5 text-sm">使う上でのポイント</h3>
           <ul className="text-xs text-gray-700 space-y-0.5 list-disc list-inside">
-            <li>慣れないうちは、まず今の手帳で考えてみることといたいか大事。さらりてもかまわないので、書いてみる。</li>
-            <li>必要に応じて、Mgrの力借りながら書いてみてください。</li>
-            <li>期中にときどき、読み返す。自分の前のことに追われ、やらされ感が湧いているときに、抜け出すキッカケになる。かもしれない。</li>
+            <li>慣れないうちは、まず今の手帳で考えてみることといたいかが大事。さらっとでもかまわないので、書いてみる。</li>
+            <li>必要に応じて、マネージャーの力を借りながら書いてみてください。</li>
+            <li>期中にときどき、読み返す。自分の目の前のことに追われ、やらされ感が湧いているときに、抜け出すキッカケになる。かもしれない。</li>
           </ul>
         </div>
 
@@ -107,7 +107,7 @@ function VisionTab() {
                 <textarea
                   className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                   rows={6}
-                  placeholder="前期に達成できたことを記入してください"
+                  placeholder="例：新規顧客3社獲得、既存顧客との関係強化、チーム目標達成"
                   value={visionData.achieved}
                   onChange={(e) => updateVisionData({ achieved: e.target.value })}
                 />
@@ -122,7 +122,7 @@ function VisionTab() {
                 <textarea
                   className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                   rows={6}
-                  placeholder="前期にできなかったことを記入してください"
+                  placeholder="例：長期的な関係構築、戦略的提案の不足"
                   value={visionData.notAchieved}
                   onChange={(e) => updateVisionData({ notAchieved: e.target.value })}
                 />
@@ -134,12 +134,12 @@ function VisionTab() {
         {/* 今後目指したい姿 */}
         <div className="mb-4">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            今後目指したい姿（1〜3年のいゆるレンジで）／キャリアの方向性
+            今後目指したい姿（1〜3年のいわゆるレンジで）／キャリアの方向性
           </label>
           <textarea
             className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
             rows={5}
-            placeholder="将来的に目指したい姿を記入してください"
+            placeholder="例：顧客と長期的な信頼関係を築けるビジネスパートナーになる、戦略的な提案ができる営業のプロフェッショナルを目指す"
             value={visionData.futureGoal}
             onChange={(e) => updateVisionData({ futureGoal: e.target.value })}
           />
@@ -153,7 +153,7 @@ function VisionTab() {
           <textarea
             className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
             rows={5}
-            placeholder="今期の意味づけを記入してください"
+            placeholder="例：顧客理解を深め、本質的な課題解決ができる力を身につける期にする"
             value={visionData.termMeaning}
             onChange={(e) => updateVisionData({ termMeaning: e.target.value })}
           />
@@ -163,12 +163,12 @@ function VisionTab() {
         <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              今期出したい成果（定量・定性・それられ書いてみましょう）
+              今期出したい成果（定量・定性・それぞれ書いてみましょう）
             </label>
             <textarea
               className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
               rows={8}
-              placeholder="成果目標を記入してください"
+              placeholder="例：&#10;【定量】売上目標5,000万円達成、新規顧客5社獲得&#10;【定性】顧客との信頼関係構築、戦略的提案力の向上"
               value={visionData.quantitativeGoal}
               onChange={(e) => updateVisionData({ quantitativeGoal: e.target.value })}
             />
@@ -180,7 +180,7 @@ function VisionTab() {
             <textarea
               className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
               rows={8}
-              placeholder="取り組みたいことを記入してください"
+              placeholder="例：月次での振り返り習慣化、顧客ニーズの深掘りヒアリング、業界動向の継続的なキャッチアップ"
               value={visionData.qualitativeGoal}
               onChange={(e) => updateVisionData({ qualitativeGoal: e.target.value })}
             />
@@ -192,7 +192,7 @@ function VisionTab() {
             <textarea
               className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
               rows={8}
-              placeholder="こだわりポイントを記入してください"
+              placeholder="例：顧客視点で考える、長期的な関係を大切にする、チームで成果を出す"
               value={visionData.stance}
               onChange={(e) => updateVisionData({ stance: e.target.value })}
             />
@@ -202,12 +202,12 @@ function VisionTab() {
         {/* グループメンバーに期待つてほしい観点 */}
         <div className="mt-4">
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            グループメンバーに期待つてほしい観点
+            グループメンバーに期待してほしい観点
           </label>
           <textarea
             className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
             rows={4}
-            placeholder="メンバーに期待することを記入してください"
+            placeholder="例：困ったときは相談してほしい、チームで情報共有を積極的にしたい、お互いの成長を支援し合いたい"
             value={visionData.memberExpectations}
             onChange={(e) => updateVisionData({ memberExpectations: e.target.value })}
           />
@@ -566,23 +566,23 @@ function BaseTab() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr className="hover:bg-gray-50">
-                <td className="px-2 py-2 text-xs font-medium">株）某和巧システムズ株式会社</td>
+                <td className="px-2 py-2 text-xs font-medium">株）グローバルシステムズ</td>
                 <td className="px-2 py-2 text-xs">2,000</td>
                 <td className="px-2 py-2 text-xs">5,000</td>
                 <td className="px-2 py-2 text-xs">11,000</td>
                 <td className="px-2 py-2 text-xs">19,000</td>
                 <td className="px-2 py-2 text-xs max-w-xs">
-                  人事部長からSRMSに移らな触実施されるいう触感がある（感覚の営業先らあるてもる）
+                  人事部長からHRシステム刷新の検討を進めたいという意向あり（感触良好）
                 </td>
                 <td className="px-2 py-2 text-xs">
-                  ・ドンド採用品・報告会<br/>
-                  ・情報収動（新人入中超2&amp;上・割任マネガー）<br/>
+                  ・定例報告会・研修実施<br/>
+                  ・情報収集（新人入社予定人数・管理職研修ニーズ）<br/>
                   ＜面談＞<br/>
-                  ・年代惑士エツクげ経費
+                  ・年代別キャリア研修提案
                 </td>
                 <td className="px-2 py-2 text-xs">
-                  ・情報収取支者確認の会全体需要をスヌす行<br/>
-                  ・ガウンナード②の入通実数との情報昭的な情報提供で講している計叫す行け
+                  ・情報収集を通じて全社ニーズを把握<br/>
+                  ・カウンターパートとの信頼関係構築と定期的な情報提供を継続
                 </td>
               </tr>
               <tr>

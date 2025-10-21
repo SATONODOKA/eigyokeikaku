@@ -79,11 +79,65 @@ export const useStore = create<AppState>()(
       performanceData: {},
       
       focusCustomers: [
-        { id: '1', name: '顧客A', relationLevel: 'level1', quantitativeGoal: '', qualitativeGoal: '', monthlyPlans: {}, termReview: '', events: [] },
-        { id: '2', name: '顧客B', relationLevel: 'level1', quantitativeGoal: '', qualitativeGoal: '', monthlyPlans: {}, termReview: '', events: [] },
-        { id: '3', name: '顧客C', relationLevel: 'level1', quantitativeGoal: '', qualitativeGoal: '', monthlyPlans: {}, termReview: '', events: [] },
-        { id: '4', name: '顧客D', relationLevel: 'level1', quantitativeGoal: '', qualitativeGoal: '', monthlyPlans: {}, termReview: '', events: [] },
-        { id: '5', name: '顧客E', relationLevel: 'level1', quantitativeGoal: '', qualitativeGoal: '', monthlyPlans: {}, termReview: '', events: [] },
+        { 
+          id: '1', 
+          name: '顧客A', 
+          relationLevel: 'level1', 
+          quantitativeGoal: '', 
+          qualitativeGoal: '', 
+          monthlyPlans: {}, 
+          termReview: '', 
+          events: [
+            { date: '2024-09-15', type: '提案', content: '新人研修プログラム提案実施', source: 'SPA' },
+            { date: '2024-08-20', type: '面談', content: '人事部長との定例面談', source: 'EVENT' },
+            { date: '2024-07-10', type: '報告会', content: '前期実績報告会開催', source: 'HISTORY' },
+          ]
+        },
+        { 
+          id: '2', 
+          name: '顧客B', 
+          relationLevel: 'level1', 
+          quantitativeGoal: '', 
+          qualitativeGoal: '', 
+          monthlyPlans: {}, 
+          termReview: '', 
+          events: [
+            { date: '2024-09-01', type: '研修', content: '管理職研修実施（30名参加）', source: 'SPA' },
+            { date: '2024-06-15', type: '提案', content: 'リーダーシップ研修プログラム提案', source: 'EVENT' },
+          ]
+        },
+        { 
+          id: '3', 
+          name: '顧客C', 
+          relationLevel: 'level1', 
+          quantitativeGoal: '', 
+          qualitativeGoal: '', 
+          monthlyPlans: {}, 
+          termReview: '', 
+          events: [
+            { date: '2024-08-05', type: '面談', content: '経営層との戦略ミーティング', source: 'EVENT' },
+          ]
+        },
+        { 
+          id: '4', 
+          name: '顧客D', 
+          relationLevel: 'level1', 
+          quantitativeGoal: '', 
+          qualitativeGoal: '', 
+          monthlyPlans: {}, 
+          termReview: '', 
+          events: []
+        },
+        { 
+          id: '5', 
+          name: '顧客E', 
+          relationLevel: 'level1', 
+          quantitativeGoal: '', 
+          qualitativeGoal: '', 
+          monthlyPlans: {}, 
+          termReview: '', 
+          events: []
+        },
       ],
       
       baseCustomers: [],
