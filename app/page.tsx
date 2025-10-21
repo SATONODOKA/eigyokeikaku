@@ -379,7 +379,7 @@ function PerformanceSection({
 
 // Performance タブ
 function PerformanceTab() {
-  const { performanceData, saveData } = useStore();
+  const { performanceData, updatePerformanceData, saveData } = useStore();
   const [targetAmount, setTargetAmount] = React.useState(performanceData.targetAmount);
   const [currentAmount, setCurrentAmount] = React.useState(performanceData.currentAmount);
   const [cancelRisk, setCancelRisk] = React.useState(performanceData.cancelRisk);
@@ -387,6 +387,19 @@ function PerformanceTab() {
   const [bYomiItems, setBYomiItems] = React.useState(performanceData.bYomiItems);
   const [cYomiItems, setCYomiItems] = React.useState(performanceData.cYomiItems);
   const [netaYomiItems, setNetaYomiItems] = React.useState(performanceData.netaYomiItems);
+
+  // ローカルstateの変更をZustandストアに自動同期
+  React.useEffect(() => {
+    updatePerformanceData({
+      targetAmount,
+      currentAmount,
+      cancelRisk,
+      aYomiItems,
+      bYomiItems,
+      cYomiItems,
+      netaYomiItems
+    });
+  }, [targetAmount, currentAmount, cancelRisk, aYomiItems, bYomiItems, cYomiItems, netaYomiItems, updatePerformanceData]);
 
   // 計算ロジック（treatAsAフラグを考慮）
   // A扱いされるB/C案件の合計
@@ -399,9 +412,9 @@ function PerformanceTab() {
   const cYomiTotal = cYomiItems.filter(item => !item.treatAsA).reduce((sum, item) => sum + item.amount, 0);
   const netaYomiTotal = netaYomiItems.reduce((sum, item) => sum + item.amount, 0);
 
-  const aYomiExpected = aYomiTotal * 0.9;
-  const abYomiExpected = aYomiTotal * 0.9 + bYomiTotal * 0.4;
-  const abcYomiExpected = aYomiTotal * 0.9 + bYomiTotal * 0.4 + cYomiTotal * 0.1;
+  const aYomiExpected = currentAmount + aYomiTotal * 0.9;
+  const abYomiExpected = currentAmount + aYomiTotal * 0.9 + bYomiTotal * 0.4;
+  const abcYomiExpected = currentAmount + aYomiTotal * 0.9 + bYomiTotal * 0.4 + cYomiTotal * 0.1;
 
   const requiredNewOrders = targetAmount - abcYomiExpected - cancelRisk;
   const requiredNewProposals = requiredNewOrders * 3;
@@ -1145,7 +1158,7 @@ function HomeTab() {
         {/* CSVアップロードエリア */}
         <div className="space-y-4 max-w-2xl w-full">
           {/* SPAデータ */}
-          <div>
+                        <div>
             <input
               ref={spaInputRef}
               type="file"
@@ -1169,10 +1182,10 @@ function HomeTab() {
                 {displaySpaName ? `✓ ${displaySpaName}` : 'SPAデータを読み込む'}
               </span>
             </button>
-          </div>
+                        </div>
 
           {/* トレナビデータ */}
-          <div>
+                        <div>
             <input
               ref={torenaviInputRef}
               type="file"
@@ -1196,7 +1209,7 @@ function HomeTab() {
                 {displayTorenaviName ? `✓ ${displayTorenaviName}` : 'トレナビデータを読み込む'}
               </span>
             </button>
-          </div>
+                        </div>
 
           {/* 実行ボタン */}
           <button

@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { get as idbGet, set as idbSet, del as idbDel } from 'idb-keyval';
 
 export type Tab = 'home' | 'vision' | 'performance' | 'focus' | 'base';
 
@@ -98,11 +100,28 @@ interface AppState {
   updateBaseCustomer: (index: number, data: Partial<BaseCustomer>) => void;
   addBaseCustomer: () => void;
   deleteBaseCustomer: (index: number) => void;
+  updatePerformanceData: (data: Partial<PerformanceData>) => void;
   saveData: () => void;
 }
 
-export const useStore = create<AppState>()((set, get) => ({
-      // 初期状態
+// IndexedDB用のカスタムストレージ
+const indexedDBStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    const value = await idbGet(name);
+    return value || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await idbSet(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await idbDel(name);
+  },
+};
+
+export const useStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      // 初期状態（空のデータ）
       activeTab: 'home',
       selectedCustomerIndex: 0,
       
@@ -140,11 +159,7 @@ export const useStore = create<AppState>()((set, get) => ({
           qualitativeGoal: '', 
           monthlyPlans: {}, 
           termReview: '', 
-          events: [
-            { date: '2024-09-15', type: '提案', content: '新人研修プログラム提案実施', source: 'SPA' },
-            { date: '2024-08-20', type: '面談', content: '人事部長との定例面談', source: 'EVENT' },
-            { date: '2024-07-10', type: '報告会', content: '前期実績報告会開催', source: 'HISTORY' },
-          ]
+          events: []
         },
         { 
           id: '2', 
@@ -154,10 +169,7 @@ export const useStore = create<AppState>()((set, get) => ({
           qualitativeGoal: '', 
           monthlyPlans: {}, 
           termReview: '', 
-          events: [
-            { date: '2024-09-01', type: '研修', content: '管理職研修実施（30名参加）', source: 'SPA' },
-            { date: '2024-06-15', type: '提案', content: 'リーダーシップ研修プログラム提案', source: 'EVENT' },
-          ]
+          events: []
         },
         { 
           id: '3', 
@@ -167,9 +179,7 @@ export const useStore = create<AppState>()((set, get) => ({
           qualitativeGoal: '', 
           monthlyPlans: {}, 
           termReview: '', 
-          events: [
-            { date: '2024-08-05', type: '面談', content: '経営層との戦略ミーティング', source: 'EVENT' },
-          ]
+          events: []
         },
         { 
           id: '4', 
@@ -193,42 +203,7 @@ export const useStore = create<AppState>()((set, get) => ({
         },
       ],
       
-      baseCustomers: [
-        {
-          id: '1',
-          name: '武蔵システムズ株式会社',
-          employeeCount: '2,000',
-          record36First: '5,000',
-          record36Second: '11,000',
-          record37First: '9,800',
-          record37Second: '17,600',
-          record38First: '3,000',
-          record38Second: '2,000',
-          term37Target: '19,000',
-          term38Target: '25,000',
-          targetState: '',
-          currentProducts: '',
-          activityFocus: '',
-          termReview: ''
-        },
-        {
-          id: '2',
-          name: '顧客B株式会社',
-          employeeCount: '500',
-          record36First: '0',
-          record36Second: '0',
-          record37First: '0',
-          record37Second: '0',
-          record38First: '0',
-          record38Second: '0',
-          term37Target: '',
-          term38Target: '',
-          targetState: '',
-          currentProducts: '',
-          activityFocus: '',
-          termReview: ''
-        }
-      ],
+      baseCustomers: [],
       
       // アクション
       setActiveTab: (tab) => set({ activeTab: tab }),
@@ -278,9 +253,19 @@ export const useStore = create<AppState>()((set, get) => ({
         baseCustomers: state.baseCustomers.filter((_, i) => i !== index)
       })),
 
+      updatePerformanceData: (data) => set((state) => ({
+        performanceData: { ...state.performanceData, ...data }
+      })),
+
       saveData: () => {
-        console.log('データを保存しました（メモリ上）');
-        alert('データを保存しました（メモリ上に一時保存）');
+        console.log('データをIndexedDBに保存しました');
+        alert('データを保存しました');
       },
-    }));
+    }),
+    {
+      name: 'eigyokeikaku-storage', // IndexedDBのキー名
+      storage: createJSONStorage(() => indexedDBStorage),
+    }
+  )
+);
 
