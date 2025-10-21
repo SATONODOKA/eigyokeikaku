@@ -37,6 +37,7 @@ next-env.d.ts
 # test files and screenshots
 /tests
 /screenshots
+/playwright-data
 
 # serena
 /.serena
