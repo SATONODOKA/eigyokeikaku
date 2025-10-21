@@ -6,11 +6,6 @@ import { useStore } from "@/lib/store";
 export default function Home() {
   const { activeTab, setActiveTab } = useStore();
 
-  // ホームタブの場合は別レイアウト
-  if (activeTab === "home") {
-    return <HomeTab />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
@@ -80,6 +75,7 @@ export default function Home() {
 
       {/* メインコンテンツ */}
       <main className="w-full px-2 sm:px-4 lg:px-6 py-2 sm:py-4">
+        {activeTab === "home" && <HomeTab />}
         {activeTab === "vision" && <VisionTab />}
         {activeTab === "performance" && <PerformanceTab />}
         {activeTab === "focus" && <FocusTab />}
@@ -98,8 +94,8 @@ function VisionTab() {
       <div className="bg-white rounded-lg shadow p-3 h-full overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-gray-900">
-            ①目指す姿：自身の現状とこれからを展望する
-          </h2>
+          ①目指す姿：自身の現状とこれからを展望する
+        </h2>
           <button
             onClick={() => alert('【使う上でのポイント】\n\n• 慣れないうちは、まず今の手帳で考えてみることといたいかが大事。さらっとでもかまわないので、書いてみる。\n• 必要に応じて、マネージャーの力を借りながら書いてみてください。\n• 期中にときどき、読み返す。自分の目の前のことに追われ、やらされ感が湧いているときに、抜け出すキッカケになる。かもしれない。')}
             className="w-6 h-6 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center text-blue-600 text-xs font-bold transition-colors cursor-pointer flex-shrink-0"
@@ -275,14 +271,14 @@ function PerformanceSection({
   const deleteRow = (index: number) => {
     onItemsChange(items.filter((_, i) => i !== index));
   };
-
+  
   return (
     <div className={`mb-4 p-3 ${bgColor} rounded-lg`}>
-      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold">{title}</h3>
         <div className="flex items-center gap-2">
           <span className="text-xs">合計: <span className="font-bold text-lg">{total.toLocaleString()}</span></span>
-          <button
+          <button 
             onClick={addRow}
             className="px-2 py-1 text-xs bg-white border rounded hover:bg-gray-50"
           >
@@ -292,7 +288,7 @@ function PerformanceSection({
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
-          <thead>
+            <thead>
             <tr className="bg-white">
               {showTreatAsA && <th className="border px-2 py-1 text-center font-medium w-16">A扱い</th>}
               <th className="border px-2 py-1 text-left font-medium">社名</th>
@@ -301,9 +297,9 @@ function PerformanceSection({
               <th className="border px-2 py-1 text-right font-medium">金額</th>
               <th className="border px-2 py-1 text-center font-medium">受注予定日</th>
               <th className="border px-2 py-1 text-center font-medium w-16">操作</th>
-            </tr>
-          </thead>
-          <tbody>
+              </tr>
+            </thead>
+            <tbody>
             {items.map((item, index) => (
               <tr key={item.id} className="bg-white">
                 {showTreatAsA && (
@@ -374,9 +370,9 @@ function PerformanceSection({
                 </td>
               </tr>
             )}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
     </div>
   );
 }
@@ -417,21 +413,21 @@ function PerformanceTab() {
       <div className="bg-white rounded-lg shadow p-3 h-full overflow-y-auto">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-gray-900">②業績計画</h2>
-          <button 
-            onClick={saveData}
-            disabled={!canSave}
-            className={`px-4 py-1.5 text-xs rounded ${
-              canSave 
-                ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            保存
-          </button>
+                 <button 
+                   onClick={saveData}
+                   disabled={!canSave}
+                   className={`px-4 py-1.5 text-xs rounded ${
+                     canSave 
+                       ? 'bg-cyan-600 text-white hover:bg-cyan-700' 
+                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                   }`}
+                 >
+                   保存
+                 </button>
         </div>
 
         {/* 目標設定 */}
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+        <div className="mb-3 p-3 bg-cyan-50 rounded-lg">
           <h3 className="text-sm font-semibold mb-2">目標設定（必須）</h3>
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -470,41 +466,42 @@ function PerformanceTab() {
                 placeholder="-10,999"
               />
             </div>
-          </div>
-        </div>
+              </div>
+            </div>
 
-        {/* 読み込み時の見込み額 */}
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-          <h3 className="text-sm font-semibold mb-2">読み込み時の見込み額</h3>
-          <div className="grid grid-cols-3 gap-3 text-xs">
-            <div>
-              <div className="font-medium text-gray-700">Aヨミが入れば</div>
-              <div className="text-lg font-bold text-blue-600">{aYomiExpected.toLocaleString()}</div>
+        {/* 見込み額と必要額の計算 - 横並び */}
+        <div className="mb-3 grid grid-cols-2 gap-2">
+          {/* 見込み額 */}
+          <div className="p-2 bg-cyan-50 rounded-lg">
+            <h3 className="text-xs font-semibold mb-1">見込み額</h3>
+            <div className="grid grid-cols-3 gap-1 text-[10px]">
+              <div>
+                <div className="text-gray-700">Aヨミ</div>
+                <div className="text-base font-bold text-cyan-700">{aYomiExpected.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-gray-700">A+B</div>
+                <div className="text-base font-bold text-cyan-700">{abYomiExpected.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-gray-700">A+B+C</div>
+                <div className="text-base font-bold text-cyan-700">{abcYomiExpected.toLocaleString()}</div>
+              </div>
+              </div>
             </div>
-            <div>
-              <div className="font-medium text-gray-700">A+Bヨミが入れば</div>
-              <div className="text-lg font-bold text-blue-600">{abYomiExpected.toLocaleString()}</div>
-            </div>
-            <div>
-              <div className="font-medium text-gray-700">A+B+Cヨミが入れば</div>
-              <div className="text-lg font-bold text-blue-600">{abcYomiExpected.toLocaleString()}</div>
-            </div>
-          </div>
-        </div>
 
-        {/* 必要額の計算 */}
-        <div className="mb-4 p-3 bg-green-50 rounded-lg">
-          <h3 className="text-sm font-semibold mb-2">必要額の計算</h3>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <div className="font-medium text-gray-700">必要な新規受注額</div>
-              <div className="text-lg font-bold text-green-600">{requiredNewOrders.toLocaleString()}</div>
-              <div className="text-[10px] text-gray-500">= 目標額 - ABC見込み額 - キャンセル見込み額</div>
-            </div>
-            <div>
-              <div className="font-medium text-gray-700">必要な新規提案額の目安</div>
-              <div className="text-lg font-bold text-green-600">{requiredNewProposals.toLocaleString()}</div>
-              <div className="text-[10px] text-gray-500">= 必要な新規受注額 × 3</div>
+          {/* 必要額の計算 */}
+          <div className="p-2 bg-cyan-50 rounded-lg">
+            <h3 className="text-xs font-semibold mb-1">必要額の計算</h3>
+            <div className="grid grid-cols-2 gap-1 text-[10px]">
+              <div>
+                <div className="text-gray-700">新規受注額</div>
+                <div className="text-base font-bold text-cyan-700">{requiredNewOrders.toLocaleString()}</div>
+                </div>
+              <div>
+                <div className="text-gray-700">新規提案額</div>
+                <div className="text-base font-bold text-cyan-700">{requiredNewProposals.toLocaleString()}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -544,7 +541,7 @@ function PerformanceTab() {
           title="ネタ（わんちゃんある案件）" 
           items={netaYomiItems}
           onItemsChange={setNetaYomiItems}
-          bgColor="bg-gray-50"
+          bgColor="bg-gray-100"
           total={netaYomiTotal}
           showTreatAsA={false}
         />
@@ -558,6 +555,64 @@ function FocusTab() {
   const { focusCustomers, selectedCustomerIndex, setSelectedCustomerIndex, updateCustomerData, saveData } = useStore();
   const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
   const currentCustomer = focusCustomers[selectedCustomerIndex];
+  
+  const [showEventModal, setShowEventModal] = React.useState(false);
+  const [editingEventIndex, setEditingEventIndex] = React.useState<number | null>(null);
+  const [newEventDate, setNewEventDate] = React.useState('');
+  const [newEventType, setNewEventType] = React.useState('面談');
+  const [newEventContent, setNewEventContent] = React.useState('');
+
+  const handleAddEvent = () => {
+    if (!newEventDate || !newEventContent) {
+      alert('日付と内容を入力してください');
+      return;
+    }
+    
+    if (editingEventIndex !== null) {
+      // 編集モード
+      const updatedEvents = [...currentCustomer.events];
+      updatedEvents[editingEventIndex] = {
+        date: newEventDate,
+        type: newEventType,
+        content: newEventContent,
+        source: updatedEvents[editingEventIndex].source || '手動追加'
+      };
+      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
+    } else {
+      // 新規追加モード
+      const newEvent = {
+        date: newEventDate,
+        type: newEventType,
+        content: newEventContent,
+        source: '手動追加'
+      };
+      const updatedEvents = [...currentCustomer.events, newEvent];
+      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
+    }
+    
+    // フォームをリセット
+    setNewEventDate('');
+    setNewEventType('面談');
+    setNewEventContent('');
+    setEditingEventIndex(null);
+    setShowEventModal(false);
+  };
+
+  const handleEditEvent = (index: number) => {
+    const event = currentCustomer.events[index];
+    setNewEventDate(event.date);
+    setNewEventType(event.type);
+    setNewEventContent(event.content);
+    setEditingEventIndex(index);
+    setShowEventModal(true);
+  };
+
+  const handleDeleteEvent = (index: number) => {
+    if (confirm('このイベントを削除してもよろしいですか？')) {
+      const updatedEvents = currentCustomer.events.filter((_, i) => i !== index);
+      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-140px)]">
@@ -566,17 +621,27 @@ function FocusTab() {
         <div className="border-b flex-shrink-0">
           <div className="flex space-x-1 px-4 pt-3">
             {focusCustomers.map((customer, index) => (
+              <div key={index} className="relative group">
               <button
-                key={index}
                 onClick={() => setSelectedCustomerIndex(index)}
                 className={`px-3 py-1.5 rounded-t-lg font-medium text-sm ${
                   selectedCustomerIndex === index
-                    ? "bg-blue-500 text-white"
+                    ? "bg-cyan-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 {customer.name}
               </button>
+                {selectedCustomerIndex === index && (
+                  <input
+                    type="text"
+                    value={customer.name}
+                    onChange={(e) => updateCustomerData(index, { name: e.target.value })}
+                    className="absolute top-0 left-0 w-full px-3 py-1.5 rounded-t-lg font-medium text-sm bg-cyan-500 text-white border-0 focus:outline-none focus:ring-2 focus:ring-cyan-600 opacity-0 hover:opacity-100 focus:opacity-100"
+                    placeholder="顧客名"
+                  />
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -592,29 +657,43 @@ function FocusTab() {
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
               {/* イベント履歴を動的に表示 */}
               {currentCustomer.events.map((event, idx) => (
-                <div key={idx} className="border rounded p-2 bg-white text-xs">
-                  <div className="flex justify-between items-start mb-1">
+                <div key={idx} className="border rounded p-2 bg-white text-xs group hover:border-cyan-300">
+                <div className="flex justify-between items-start mb-1">
                     <span className="font-semibold">{event.date}</span>
-                    <span className={`px-1.5 py-0.5 rounded text-xs ${
-                      event.type === '研修' ? 'bg-blue-100 text-blue-800' :
-                      event.type === '提案' ? 'bg-green-100 text-green-800' :
-                      event.type === '面談' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-purple-100 text-purple-800'
-                    }`}>
-                      {event.type}
-                    </span>
-                  </div>
+                    <div className="flex items-center gap-1">
+                      <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-100 text-cyan-800">
+                        {event.type}
+                      </span>
+                      <button
+                        onClick={() => handleEditEvent(idx)}
+                        className="px-2 py-0.5 text-[10px] text-blue-600 hover:bg-blue-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="編集"
+                      >
+                        編集
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEvent(idx)}
+                        className="px-2 py-0.5 text-[10px] text-red-600 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="削除"
+                      >
+                        削除
+                      </button>
+                </div>
+              </div>
                   <p className="text-gray-700">{event.content}</p>
                 </div>
               ))}
               {currentCustomer.events.length === 0 && (
-                <div className="text-center text-gray-400 text-xs mt-4 py-4 border-t">
-                  CSV読み込みで自動反映されます
-                </div>
+              <div className="text-center text-gray-400 text-xs mt-4 py-4 border-t">
+                CSV読み込みで自動反映されます
+              </div>
               )}
             </div>
             <div className="p-2 border-t bg-gray-50 flex-shrink-0">
-              <button className="w-full px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700">
+              <button 
+                onClick={() => setShowEventModal(true)}
+                className="w-full px-3 py-1.5 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700"
+              >
                 + イベント手動追加
               </button>
             </div>
@@ -626,38 +705,32 @@ function FocusTab() {
               <h2 className="text-lg font-bold text-gray-900">③重点顧客の活動計画</h2>
 
               {/* 基本情報 */}
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-2 sm:gap-3">
+              <div className="space-y-2">
+                <div className="grid lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">関係性レベル</label>
-                  <select 
-                    className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                    value={currentCustomer.relationLevel}
-                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { relationLevel: e.target.value })}
-                  >
-                    <option value="level1">レベル1：面識あり</option>
-                    <option value="level2">レベル2：定期的な接点</option>
-                    <option value="level3">レベル3：信頼関係構築</option>
-                    <option value="level4">レベル4：戦略的パートナー</option>
+                    <select 
+                      className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                      value={currentCustomer.relationLevel}
+                      onChange={(e) => updateCustomerData(selectedCustomerIndex, { relationLevel: e.target.value })}
+                    >
+                      <option value="level1">レベル1：面識あり</option>
+                      <option value="level2">レベル2：定期的な接点</option>
+                      <option value="level3">レベル3：信頼関係構築</option>
+                      <option value="level4">レベル4：戦略的パートナー</option>
                   </select>
                 </div>
+                </div>
+                
+                {/* 目標（定量・定性）を統合 */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">定量目標</label>
-                  <input
-                    type="text"
-                    className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                    placeholder="例：売上 5,000万円"
+                  <label className="block text-xs font-medium text-gray-700 mb-1">目標（定量・定性）</label>
+                  <textarea
+                    className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500"
+                    placeholder="【定量】売上 5,000万円、案件数3件、新規部署への提案2件&#10;【定性】役員との関係構築、信頼関係の深化"
+                    rows={4}
                     value={currentCustomer.quantitativeGoal}
                     onChange={(e) => updateCustomerData(selectedCustomerIndex, { quantitativeGoal: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">定性目標</label>
-                  <input
-                    type="text"
-                    className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                    placeholder="例：役員との関係構築"
-                    value={currentCustomer.qualitativeGoal}
-                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { qualitativeGoal: e.target.value })}
                   />
                 </div>
               </div>
@@ -723,7 +796,7 @@ function FocusTab() {
             <div className="p-3 border-t bg-gray-50 flex justify-end flex-shrink-0">
               <button 
                 onClick={saveData}
-                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-6 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500"
               >
                 保存
               </button>
@@ -731,171 +804,291 @@ function FocusTab() {
           </div>
         </div>
       </div>
+
+      {/* イベント追加モーダル */}
+      {showEventModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold mb-4 text-gray-900">イベント手動追加</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  日付 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={newEventDate}
+                  onChange={(e) => setNewEventDate(e.target.value)}
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  タイプ
+                </label>
+                <select
+                  value={newEventType}
+                  onChange={(e) => setNewEventType(e.target.value)}
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
+                >
+                  <option value="面談">面談</option>
+                  <option value="研修">研修</option>
+                  <option value="提案">提案</option>
+                  <option value="訪問">訪問</option>
+                  <option value="電話">電話</option>
+                  <option value="その他">その他</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  内容 <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={newEventContent}
+                  onChange={(e) => setNewEventContent(e.target.value)}
+                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
+                  rows={4}
+                  placeholder="イベントの詳細を入力してください..."
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowEventModal(false);
+                  setNewEventDate('');
+                  setNewEventType('面談');
+                  setNewEventContent('');
+                }}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleAddEvent}
+                className="px-4 py-2 text-sm text-white bg-cyan-600 rounded hover:bg-cyan-700"
+              >
+                追加
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // Base タブ
 function BaseTab() {
-  const { baseCustomers, updateBaseCustomer, saveData } = useStore();
-  const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
+  const { baseCustomers, updateBaseCustomer, addBaseCustomer, deleteBaseCustomer, saveData } = useStore();
+
+  const handleDeleteCustomer = (index: number) => {
+    if (confirm('この顧客を削除してもよろしいですか？')) {
+      deleteBaseCustomer(index);
+    }
+  };
 
   return (
     <div className="h-[calc(100vh-140px)]">
       <div className="bg-white rounded-lg shadow p-3 h-full flex flex-col">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base font-bold text-gray-900">④重点外顧客の活動計画</h2>
-          <div className="flex space-x-2">
-            <button className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700">
-              CSV読み込み
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-gray-900">④重点外顧客の活動計画</h2>
+          <div className="flex gap-2">
+            <button 
+              onClick={addBaseCustomer}
+              className="px-4 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              + 顧客追加
             </button>
             <button 
               onClick={saveData}
-              className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-1.5 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700"
             >
               保存
             </button>
           </div>
         </div>
 
-        {/* 顧客リスト - カード形式 */}
-        <div className="flex-1 overflow-auto space-y-2">
-          {baseCustomers.map((customer, customerIndex) => (
-            <div key={customer.id} className="border rounded-lg p-2 hover:shadow-md transition-shadow">
-              {/* 顧客基本情報 */}
-              <div className="grid xl:grid-cols-12 lg:grid-cols-8 md:grid-cols-6 grid-cols-4 gap-2 text-[10px] mb-2 pb-2 border-b">
-                <div className="xl:col-span-2 lg:col-span-3 md:col-span-3 col-span-4">
-                  <label className="text-gray-500 block mb-0.5">社名</label>
+        {/* テーブル形式 */}
+        <div className="flex-1 overflow-auto">
+          <table className="w-full text-xs border-collapse border">
+            <thead className="bg-cyan-50 sticky top-0">
+              <tr>
+                <th className="border px-2 py-1 text-left font-medium w-32" rowSpan={2}>社名</th>
+                <th className="border px-1 py-1 text-center font-medium w-16" rowSpan={2}>総従業員数</th>
+                <th className="border px-2 py-1 text-center font-medium bg-gray-100" colSpan={6}>実績（期初データより）</th>
+                <th className="border px-2 py-1 text-center font-medium" colSpan={2}>受注済み額</th>
+                <th className="border px-2 py-1 text-center font-medium" colSpan={3}>今期の目指す状態</th>
+                <th className="border px-2 py-1 text-center font-medium" rowSpan={2}>半期後の<br/>振り返り</th>
+                <th className="border px-1 py-1 text-center font-medium w-16" rowSpan={2}>操作</th>
+              </tr>
+              <tr>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">36上</th>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">36下</th>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">37上</th>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">37下</th>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">38上</th>
+                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">38下</th>
+                <th className="border px-1 py-1 text-center text-[10px] w-14">37下期受注済</th>
+                <th className="border px-1 py-1 text-center text-[10px] w-14">38上期受注済</th>
+                <th className="border px-1 py-1 text-left text-[10px]">どんな状態に<br/>なっていればOK</th>
+                <th className="border px-1 py-1 text-left text-[10px]">今ある商品<br/>・商談</th>
+                <th className="border px-1 py-1 text-left text-[10px]">活動の<br/>焦点</th>
+              </tr>
+            </thead>
+            <tbody>
+              {baseCustomers.map((customer, customerIndex) => (
+                <tr key={customer.id} className="hover:bg-gray-50">
+                  {/* 社名 */}
+                  <td className="border px-2 py-1">
                   <input 
                     type="text" 
                     value={customer.name}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { name: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-[10px] font-medium"
-                  />
-                </div>
-                <div className="xl:col-span-1 lg:col-span-1 md:col-span-1 col-span-1">
-                  <label className="text-gray-500 block mb-0.5 text-[9px]">担当営業数</label>
-                  <input 
-                    type="text" 
-                    value={customer.salesCount}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { salesCount: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-right text-[10px]" 
-                  />
-                </div>
-                <div className="xl:col-span-1 lg:col-span-1 md:col-span-1 col-span-1">
-                  <label className="text-gray-500 block mb-0.5 text-[9px]">年度累計</label>
-                  <input 
-                    type="text" 
-                    value={customer.yearTotal}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { yearTotal: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-right text-[10px]" 
-                  />
-                </div>
-                <div className="xl:col-span-1 lg:col-span-1 md:col-span-1 col-span-1">
-                  <label className="text-gray-500 block mb-0.5 text-[9px]">37下期</label>
-                  <input 
-                    type="text" 
-                    value={customer.term37}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { term37: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-right text-[10px]" 
-                  />
-                </div>
-                <div className="xl:col-span-1 lg:col-span-1 md:col-span-1 col-span-1">
-                  <label className="text-gray-500 block mb-0.5 text-[9px]">38上期</label>
-                  <input 
-                    type="text" 
-                    value={customer.term38}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { term38: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-right text-[10px]" 
-                  />
-                </div>
-                <div className="xl:col-span-2 lg:col-span-2 md:col-span-2 col-span-4">
-                  <label className="text-gray-500 block mb-0.5">現状認識</label>
+                      onChange={(e) => updateBaseCustomer(customerIndex, { name: e.target.value })}
+                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded bg-cyan-50"
+                      placeholder="社名（CSV読み込み）"
+                    />
+                  </td>
+                  {/* 総従業員数 */}
+                  <td className="border px-1 py-1">
+                    <input 
+                      type="text"
+                      value={customer.employeeCount}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-center bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  {/* 実績（半期ごと） */}
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record36First}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record36Second}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record37First}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record37Second}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record38First}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  <td className="border px-1 py-1 bg-gray-50">
+                    <input 
+                      type="text"
+                      value={customer.record38Second}
+                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
+                      readOnly
+                    />
+                  </td>
+                  {/* 今期目標 */}
+                  <td className="border px-1 py-1">
+                    <input 
+                      type="text"
+                      value={customer.term37Target}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { term37Target: e.target.value })}
+                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded text-right"
+                    />
+                  </td>
+                  <td className="border px-1 py-1">
+                    <input 
+                      type="text"
+                      value={customer.term38Target}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { term38Target: e.target.value })}
+                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded text-right"
+                    />
+                  </td>
+                  {/* 今期の目指す状態 - 幅を広く */}
+                  <td className="border px-2 py-1">
                   <textarea 
-                    value={customer.currentStatus}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { currentStatus: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                      value={customer.targetState}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { targetState: e.target.value })}
+                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
                     rows={2}
+                      placeholder="どんな状態に..."
                   />
-                </div>
-                <div className="xl:col-span-2 lg:col-span-2 md:col-span-2 col-span-4">
-                  <label className="text-gray-500 block mb-0.5">施策</label>
+                  </td>
+                  <td className="border px-2 py-1">
                   <textarea 
-                    value={customer.measures}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { measures: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                      value={customer.currentProducts}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { currentProducts: e.target.value })}
+                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
                     rows={2}
+                      placeholder="今ある商品・商談..."
                   />
-                </div>
-                <div className="xl:col-span-2 lg:col-span-2 md:col-span-2 col-span-4">
-                  <label className="text-gray-500 block mb-0.5">活動焦点</label>
+                  </td>
+                  <td className="border px-2 py-1">
                   <textarea 
-                    value={customer.focus}
-                    onChange={(e) => updateBaseCustomer(customerIndex, { focus: e.target.value })}
-                    className="w-full px-1 py-0.5 border rounded text-[10px] resize-none"
+                      value={customer.activityFocus}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { activityFocus: e.target.value })}
+                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
                     rows={2}
-                  />
+                      placeholder="活動の焦点..."
+                    />
+                  </td>
+                  {/* 半期後の振り返り */}
+                  <td className="border px-2 py-1">
+                    <textarea 
+                      value={customer.termReview}
+                      onChange={(e) => updateBaseCustomer(customerIndex, { termReview: e.target.value })}
+                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
+                      rows={2}
+                      placeholder="半期後の振り返り..."
+                    />
+                  </td>
+                  {/* 操作ボタン */}
+                  <td className="border px-1 py-1 text-center">
+                    <button
+                      onClick={() => handleDeleteCustomer(customerIndex)}
+                      className="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
+                      title="削除"
+                    >
+                      削除
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {baseCustomers.length === 0 && (
+                <tr>
+                  <td colSpan={15} className="border px-2 py-8 text-center text-gray-400 text-xs">
+                    「+ 顧客追加」ボタンで顧客を追加してください
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
                 </div>
               </div>
-
-              {/* 月次計画 - 横スクロール */}
-              <div className="overflow-x-auto">
-                <div className="flex gap-2 min-w-max">
-                  {months.map((month) => (
-                    <div key={month} className="lg:w-48 md:w-40 w-36 flex-shrink-0">
-                      <div className="text-[10px] font-semibold mb-1 text-center bg-gray-100 py-0.5 rounded">{month}</div>
-                      <div className="grid grid-cols-2 gap-1">
-                        <div>
-                          <label className="text-[9px] text-gray-500 block mb-0.5">行動予定</label>
-                          <textarea 
-                            className="w-full px-1 py-0.5 text-[9px] border rounded bg-blue-50/30 resize-none"
-                            rows={3}
-                            placeholder="予定を入力"
-                            value={customer.monthlyPlans[month]?.plan || ''}
-                            onChange={(e) => updateBaseCustomer(customerIndex, {
-                              monthlyPlans: {
-                                ...customer.monthlyPlans,
-                                [month]: {
-                                  plan: e.target.value,
-                                  reflection: customer.monthlyPlans[month]?.reflection || ''
-                                }
-                              }
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] text-gray-500 block mb-0.5">振り返り</label>
-                          <textarea 
-                            className="w-full px-1 py-0.5 text-[9px] border rounded bg-green-50/30 resize-none"
-                            rows={3}
-                            placeholder="振り返りを入力"
-                            value={customer.monthlyPlans[month]?.reflection || ''}
-                            onChange={(e) => updateBaseCustomer(customerIndex, {
-                              monthlyPlans: {
-                                ...customer.monthlyPlans,
-                                [month]: {
-                                  plan: customer.monthlyPlans[month]?.plan || '',
-                                  reflection: e.target.value
-                                }
-                              }
-                            })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {baseCustomers.length === 0 && (
-            <div className="text-center py-8 text-gray-400 text-sm">
-              CSV読み込み後、顧客データが表示されます
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
@@ -947,152 +1140,88 @@ function HomeTab() {
   const displayTorenaviName = torenaviFile?.name || torenaviFileName;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div className="max-w-7xl w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-6">
-          {/* タイトルエリア */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#5CB3D6' }}>
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold" style={{ color: '#2E7D9A' }}>
-              半期営業計画管理
-            </h1>
+    <div className="h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-lg shadow p-6 h-full overflow-y-auto flex items-center justify-center">
+        {/* CSVアップロードエリア */}
+        <div className="space-y-4 max-w-2xl w-full">
+          {/* SPAデータ */}
+          <div>
+            <input
+              ref={spaInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleSpaUpload}
+              className="hidden"
+            />
             <button
-              onClick={() => alert('【このツールについて】\n\nSPA・トレナビデータから定量・定性の計画・振り返りを効率化します。\n\n• 定量的な計画：数値目標の設定・管理\n• 定性的な計画：顧客戦略や施策の整理\n• 期中の振り返り：月次・半期の進捗確認\n• 顧客関係の整理：重点顧客・重点外顧客の管理')}
-              className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold transition-colors cursor-pointer"
-              title="使い方を見る"
+              onClick={() => spaInputRef.current?.click()}
+              className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-3"
+              style={{ 
+                backgroundColor: '#5CB3D6'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4A9EC4'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#5CB3D6'}
             >
-              ?
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span>
+                {displaySpaName ? `✓ ${displaySpaName}` : 'SPAデータを読み込む'}
+              </span>
             </button>
           </div>
 
-          {/* メインコンテンツ：縦配置 */}
-          <div className="space-y-6 max-w-2xl mx-auto">
-            {/* CSVアップロードエリア */}
-            <div className="space-y-3">
-              {/* SPAデータ */}
-              <div>
-                <input
-                  ref={spaInputRef}
-                  type="file"
-                  accept=".csv"
-                  onChange={handleSpaUpload}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => spaInputRef.current?.click()}
-                  className={`w-full text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
-                    displaySpaName ? 'ring-2 ring-offset-2 ring-cyan-400' : ''
-                  }`}
-                  style={{ 
-                    backgroundColor: '#5CB3D6'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4A9EC4'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#5CB3D6'}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <span>
-                    {displaySpaName ? `✓ ${displaySpaName}` : 'SPAデータを読み込む'}
-                  </span>
-                </button>
-              </div>
+          {/* トレナビデータ */}
+          <div>
+            <input
+              ref={torenaviInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleTorenaviUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => torenaviInputRef.current?.click()}
+              className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-3"
+              style={{ 
+                backgroundColor: '#52B788'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#449970'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#52B788'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span>
+                {displayTorenaviName ? `✓ ${displayTorenaviName}` : 'トレナビデータを読み込む'}
+              </span>
+            </button>
+          </div>
 
-              {/* トレナビデータ */}
-              <div>
-                <input
-                  ref={torenaviInputRef}
-                  type="file"
-                  accept=".csv"
-                  onChange={handleTorenaviUpload}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => torenaviInputRef.current?.click()}
-                  className={`w-full text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${
-                    displayTorenaviName ? 'ring-2 ring-offset-2 ring-green-400' : ''
-                  }`}
-                  style={{ 
-                    backgroundColor: '#52B788'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#449970'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#52B788'}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <span>
-                    {displayTorenaviName ? `✓ ${displayTorenaviName}` : 'トレナビデータを読み込む'}
-                  </span>
-                </button>
-              </div>
+          {/* 実行ボタン */}
+          <button
+            onClick={handleExecute}
+            disabled={!canExecute}
+            className={`w-full font-medium py-4 px-6 rounded-lg transition-all ${
+              canExecute 
+                ? 'cursor-pointer' 
+                : 'cursor-not-allowed'
+            }`}
+            style={{ 
+              backgroundColor: canExecute ? '#D1D5DB' : '#E5E7EB',
+              color: canExecute ? '#374151' : '#9CA3AF'
+            }}
+          >
+            {canExecute ? '実行' : '2つのCSVファイルを選択してください'}
+          </button>
 
-              {/* 実行ボタン */}
-              <button
-                onClick={handleExecute}
-                disabled={!canExecute}
-                className={`w-full text-white font-bold py-3 px-8 rounded-xl text-base transition-all shadow-lg ${
-                  canExecute 
-                    ? 'hover:shadow-2xl cursor-pointer' 
-                    : 'opacity-40 cursor-not-allowed'
-                }`}
-                style={{ 
-                  backgroundColor: canExecute ? '#2E7D9A' : '#9CA3AF'
-                }}
-                onMouseEnter={(e) => {
-                  if (canExecute) e.currentTarget.style.backgroundColor = '#1E5D7A';
-                }}
-                onMouseLeave={(e) => {
-                  if (canExecute) e.currentTarget.style.backgroundColor = '#2E7D9A';
-                }}
-              >
-                {canExecute ? '実行' : '2つのCSVファイルを選択してください'}
-              </button>
-
-              {/* 注意書き */}
-              <div className="pt-3 border-t border-gray-200">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>データはブラウザにローカル保存されます</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 既存データへのクイックアクセス */}
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-sm font-semibold text-gray-700 mb-3">既存データを確認</p>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setActiveTab('vision')}
-                  className="py-3 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700"
-                >
-                  ①目指す姿
-                </button>
-                <button
-                  onClick={() => setActiveTab('performance')}
-                  className="py-3 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700"
-                >
-                  ②業績計画
-                </button>
-                <button
-                  onClick={() => setActiveTab('focus')}
-                  className="py-3 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700"
-                >
-                  ③重点顧客の活動計画
-                </button>
-                <button
-                  onClick={() => setActiveTab('base')}
-                  className="py-3 px-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700"
-                >
-                  ④重点外顧客の活動計画
-                </button>
-              </div>
+          {/* 注意書き */}
+          <div className="pt-6 mt-8 border-t border-gray-200">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span>データはブラウザにローカル保存されます</span>
             </div>
           </div>
         </div>

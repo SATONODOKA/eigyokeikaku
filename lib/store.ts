@@ -57,19 +57,21 @@ interface CustomerData {
 interface BaseCustomer {
   id: string;
   name: string;
-  salesCount: string;
-  yearTotal: string;
-  term37: string;
-  term38: string;
-  currentStatus: string;
-  measures: string;
-  focus: string;
-  monthlyPlans: {
-    [month: string]: {
-      plan: string;
-      reflection: string;
-    };
-  };
+  employeeCount: string;  // 総従業員数
+  // CSV読み込み項目（実績 - 半期ごとの売上実績）
+  record36First: string;   // 36上
+  record36Second: string;  // 36下
+  record37First: string;   // 37上
+  record37Second: string;  // 37下
+  record38First: string;   // 38上
+  record38Second: string;  // 38下
+  // 手入力項目
+  term37Target: string;
+  term38Target: string;
+  targetState: string;     // どんな状態になっていればOKか
+  currentProducts: string; // 今ある商品・商談
+  activityFocus: string;   // 活動の焦点
+  termReview: string;      // 半期後の振り返り
 }
 
 interface AppState {
@@ -94,6 +96,8 @@ interface AppState {
   updateVisionData: (data: Partial<VisionData>) => void;
   updateCustomerData: (index: number, data: Partial<CustomerData>) => void;
   updateBaseCustomer: (index: number, data: Partial<BaseCustomer>) => void;
+  addBaseCustomer: () => void;
+  deleteBaseCustomer: (index: number) => void;
   saveData: () => void;
 }
 
@@ -192,15 +196,37 @@ export const useStore = create<AppState>()((set, get) => ({
       baseCustomers: [
         {
           id: '1',
-          name: '株）グローバルシステムズ',
-          salesCount: '2,000',
-          yearTotal: '5,000',
-          term37: '11,000',
-          term38: '19,000',
-          currentStatus: '人事部長からHRシステム刷新の検討を進めたいという意向あり（感触良好）',
-          measures: '・定例報告会・研修実施\n・情報収集（新人入社予定人数・管理職研修ニーズ）',
-          focus: '・情報収集を通じて全社ニーズを把握\n・カウンターパートとの信頼関係構築',
-          monthlyPlans: {}
+          name: '武蔵システムズ株式会社',
+          employeeCount: '2,000',
+          record36First: '5,000',
+          record36Second: '11,000',
+          record37First: '9,800',
+          record37Second: '17,600',
+          record38First: '3,000',
+          record38Second: '2,000',
+          term37Target: '19,000',
+          term38Target: '25,000',
+          targetState: '',
+          currentProducts: '',
+          activityFocus: '',
+          termReview: ''
+        },
+        {
+          id: '2',
+          name: '顧客B株式会社',
+          employeeCount: '500',
+          record36First: '0',
+          record36Second: '0',
+          record37First: '0',
+          record37Second: '0',
+          record38First: '0',
+          record38Second: '0',
+          term37Target: '',
+          term38Target: '',
+          targetState: '',
+          currentProducts: '',
+          activityFocus: '',
+          termReview: ''
         }
       ],
       
@@ -226,7 +252,32 @@ export const useStore = create<AppState>()((set, get) => ({
         baseCustomers[index] = { ...baseCustomers[index], ...data };
         return { baseCustomers };
       }),
-      
+
+      addBaseCustomer: () => set((state) => {
+        const newCustomer: BaseCustomer = {
+          id: Date.now().toString(),
+          name: '',
+          employeeCount: '',
+          record36First: '',
+          record36Second: '',
+          record37First: '',
+          record37Second: '',
+          record38First: '',
+          record38Second: '',
+          term37Target: '',
+          term38Target: '',
+          targetState: '',
+          currentProducts: '',
+          activityFocus: '',
+          termReview: ''
+        };
+        return { baseCustomers: [...state.baseCustomers, newCustomer] };
+      }),
+
+      deleteBaseCustomer: (index) => set((state) => ({
+        baseCustomers: state.baseCustomers.filter((_, i) => i !== index)
+      })),
+
       saveData: () => {
         console.log('データを保存しました（メモリ上）');
         alert('データを保存しました（メモリ上に一時保存）');
