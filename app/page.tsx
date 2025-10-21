@@ -228,87 +228,91 @@ function VisionTab() {
 
 // Performance タブ
 function PerformanceTab() {
+  const { saveData } = useStore();
+  
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
+    <div className="h-[calc(100vh-140px)]">
+      <div className="bg-white rounded-lg shadow p-4 h-full flex flex-col overflow-y-auto">
+        <h2 className="text-lg font-bold text-gray-900 mb-2">
           ②業績計画：期初・・・今半期の業績のスタート地点を確認する
         </h2>
-        <p className="text-sm text-gray-600 mb-2">期中・・・現在地を確認する</p>
+        <p className="text-xs text-gray-600 mb-4">期中・・・現在地を確認する</p>
 
         {/* 期ごとの比較表 */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 mb-6">
+        <div className="overflow-x-auto mb-4">
+          <table className="min-w-full divide-y divide-gray-200 text-sm border">
             <thead>
               <tr>
-                <th className="px-4 py-2 bg-gray-50 text-left text-sm font-semibold text-gray-900"></th>
-                <th className="px-4 py-2 bg-blue-50 text-center text-sm font-semibold text-gray-900">37下期</th>
-                <th className="px-4 py-2 bg-green-50 text-center text-sm font-semibold text-gray-900">38上期</th>
+                <th className="px-3 py-2 bg-gray-50 text-left text-xs font-semibold text-gray-900 border-r"></th>
+                <th className="px-3 py-2 bg-blue-100 text-center text-xs font-semibold text-gray-900">37下期</th>
+                <th className="px-3 py-2 bg-green-100 text-center text-xs font-semibold text-gray-900">38上期</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">現象予</td>
-                <td className="px-4 py-2 text-right text-sm">80,000</td>
-                <td className="px-4 py-2 text-right text-sm"></td>
+              <tr className="bg-white">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">目標数</td>
+                <td className="px-3 py-2 text-right text-xs">80,000</td>
+                <td className="px-3 py-2 text-right text-xs"></td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">A主＋Aイレギュラー(値引)</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
+              <tr className="bg-gray-50">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">現実予</td>
+                <td className="px-3 py-2 text-right text-xs"></td>
+                <td className="px-3 py-2 text-right text-xs"></td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">経常＋Bレグノ（マイナス表示）</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
+              <tr className="bg-white">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">A主　キャンセルリスクの危険</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">必要な新規提供者金額</td>
-                <td className="px-4 py-2 text-right text-sm">80,000</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
+              <tr className="bg-gray-50">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">新規提案プランの提案（マイナス表記）</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900">必要な新規提供の受注率</td>
-                <td className="px-4 py-2 text-right text-sm">240,000</td>
-                <td className="px-4 py-2 text-right text-sm">0</td>
+              <tr className="bg-white">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">必要な新規成長件数</td>
+                <td className="px-3 py-2 text-right text-xs">80,000</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
               </tr>
-              <tr>
-                <td className="px-4 py-2 text-sm font-medium text-gray-900 bg-yellow-50">
-                  必要な新規提供確保の目安
-                </td>
-                <td className="px-4 py-2 text-right text-sm bg-yellow-50">240,000</td>
-                <td className="px-4 py-2 text-right text-sm bg-yellow-50">0</td>
+              <tr className="bg-gray-50">
+                <td className="px-3 py-2 text-xs font-medium text-gray-900 border-r">必要な新規案件の目安</td>
+                <td className="px-3 py-2 text-right text-xs">240,000</td>
+                <td className="px-3 py-2 text-right text-xs">0</td>
               </tr>
             </tbody>
           </table>
         </div>
 
+        <p className="text-xs text-gray-500 mb-4">
+          ※前期までの他施策の提供単価の目安：240,000
+        </p>
+
         {/* 顧客別の詳細テーブル */}
-        <div className="space-y-8">
-          {/* キャンセルリスクが高い組織 */}
+        <div className="space-y-4">
+          {/* キャンセルリスク/ネタ顧客 */}
           <div>
-            <h3 className="text-lg font-semibold mb-3 bg-yellow-100 p-2 rounded">
-              キャンセルリスクが高い組織（マイナス表示）
+            <h3 className="text-sm font-semibold mb-2 bg-red-100 p-2 rounded">
+              キャンセルリスク/ネタ顧客（マイナス表記）
             </h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border">
+              <table className="min-w-full divide-y divide-gray-200 border text-xs">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   <tr>
-                    <td className="px-3 py-2 text-sm" colSpan={10}>データがありません</td>
+                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={10}>データがありません</td>
                   </tr>
                 </tbody>
               </table>
@@ -317,68 +321,74 @@ function PerformanceTab() {
 
           {/* A主 */}
           <div>
-            <h3 className="text-lg font-semibold mb-3 bg-green-100 p-2 rounded">A主</h3>
+            <h3 className="text-sm font-semibold mb-2 bg-green-100 p-2 rounded">A主</h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border">
+              <table className="min-w-full divide-y divide-gray-200 border text-xs">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   <tr>
-                    <td className="px-3 py-2 text-sm" colSpan={10}>データがありません</td>
+                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={10}>データがありません</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* B・C・ネラ */}
+          {/* B・C・ネタ */}
           <div>
-            <h3 className="text-lg font-semibold mb-3 bg-orange-100 p-2 rounded">B・C・ネラ</h3>
+            <h3 className="text-sm font-semibold mb-2 bg-orange-100 p-2 rounded">フラグ　B・C・ネタ</h3>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 border">
+              <table className="min-w-full divide-y divide-gray-200 border text-xs">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">フラグ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">フラグ</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">社名</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">案件</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">確度</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">金額</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">受注下予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">フラグ</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500 border-l-2">フラグ</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">社名</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受任</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">地域</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">名称</th>
+                    <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-500">受け予定日</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   <tr>
-                    <td className="px-3 py-2 text-sm" colSpan={12}>データがありません</td>
+                    <td className="px-2 py-2 text-xs text-center text-gray-400" colSpan={12}>データがありません</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            
+            <div className="mt-2 flex justify-end space-x-4 text-xs">
+              <span>合計：<span className="font-semibold">0</span></span>
+              <span>フラグ委任中の合計：<span className="font-semibold">0</span></span>
+              <span>フラグ委任中の合計：<span className="font-semibold">0</span></span>
             </div>
           </div>
         </div>
-
-        <div className="mt-6 flex justify-end space-x-3">
-          <button className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-            CSV読み込み
-          </button>
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        
+        <div className="mt-4 flex justify-end">
+          <button 
+            onClick={saveData}
+            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             保存
           </button>
         </div>
@@ -544,6 +554,7 @@ function FocusTab() {
 // Base タブ
 function BaseTab() {
   const { saveData } = useStore();
+  const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
 
   return (
     <div className="h-[calc(100vh-140px)]">
@@ -554,19 +565,25 @@ function BaseTab() {
           <table className="min-w-full divide-y divide-gray-200 text-xs">
             <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">社名</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 sticky left-0 bg-gray-50 z-10 border-r">社名</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">担当営業数</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">年度累計</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">37下期</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">38上期</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">現状認識</th>
                 <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">施策</th>
-                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">活動焦点</th>
+                <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 border-r">活動焦点</th>
+                {months.map((month) => (
+                  <React.Fragment key={month}>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 bg-blue-50">{month}<br/>行動予定</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 bg-green-50 border-r">{month}<br/>振り返り</th>
+                  </React.Fragment>
+                ))}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               <tr className="hover:bg-gray-50">
-                <td className="px-2 py-2 text-xs font-medium">株）グローバルシステムズ</td>
+                <td className="px-2 py-2 text-xs font-medium sticky left-0 bg-white border-r">株）グローバルシステムズ</td>
                 <td className="px-2 py-2 text-xs">2,000</td>
                 <td className="px-2 py-2 text-xs">5,000</td>
                 <td className="px-2 py-2 text-xs">11,000</td>
@@ -580,13 +597,29 @@ function BaseTab() {
                   ＜面談＞<br/>
                   ・年代別キャリア研修提案
                 </td>
-                <td className="px-2 py-2 text-xs">
+                <td className="px-2 py-2 text-xs border-r">
                   ・情報収集を通じて全社ニーズを把握<br/>
                   ・カウンターパートとの信頼関係構築と定期的な情報提供を継続
                 </td>
+                {months.map((month) => (
+                  <React.Fragment key={month}>
+                    <td className="px-2 py-2 text-xs bg-blue-50/30">
+                      <textarea 
+                        className="w-32 h-16 p-1 text-xs border border-gray-300 rounded resize-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="行動予定を入力"
+                      />
+                    </td>
+                    <td className="px-2 py-2 text-xs bg-green-50/30 border-r">
+                      <textarea 
+                        className="w-32 h-16 p-1 text-xs border border-gray-300 rounded resize-none focus:ring-1 focus:ring-green-500"
+                        placeholder="振り返りを入力"
+                      />
+                    </td>
+                  </React.Fragment>
+                ))}
               </tr>
               <tr>
-                <td className="px-2 py-4 text-xs text-center text-gray-400" colSpan={8}>
+                <td className="px-2 py-4 text-xs text-center text-gray-400" colSpan={20}>
                   他の顧客データはCSV読み込み後に表示されます
                 </td>
               </tr>
