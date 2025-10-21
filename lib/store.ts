@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-export type Tab = 'vision' | 'performance' | 'focus' | 'base';
+export type Tab = 'home' | 'vision' | 'performance' | 'focus' | 'base';
 
 interface VisionData {
   achieved: string;
@@ -14,8 +13,24 @@ interface VisionData {
   memberExpectations: string;
 }
 
+export interface PerformanceItem {
+  id: string;
+  company: string;
+  project: string;
+  probability: string;
+  amount: number;
+  expectedDate: string;
+  treatAsA?: boolean; // B/CヨミをA扱いにするフラグ
+}
+
 interface PerformanceData {
-  // 業績データ
+  targetAmount: number;
+  currentAmount: number;
+  cancelRisk: number;
+  aYomiItems: PerformanceItem[];
+  bYomiItems: PerformanceItem[];
+  cYomiItems: PerformanceItem[];
+  netaYomiItems: PerformanceItem[];
 }
 
 interface CustomerData {
@@ -39,31 +54,57 @@ interface CustomerData {
   }>;
 }
 
+interface BaseCustomer {
+  id: string;
+  name: string;
+  salesCount: string;
+  yearTotal: string;
+  term37: string;
+  term38: string;
+  currentStatus: string;
+  measures: string;
+  focus: string;
+  monthlyPlans: {
+    [month: string]: {
+      plan: string;
+      reflection: string;
+    };
+  };
+}
+
 interface AppState {
   // UI状態
   activeTab: Tab;
   selectedCustomerIndex: number;
   
+  // CSVファイル状態
+  spaFileName: string | null;
+  torenaviFileName: string | null;
+  
   // データ
   visionData: VisionData;
   performanceData: PerformanceData;
   focusCustomers: CustomerData[];
-  baseCustomers: any[];
+  baseCustomers: BaseCustomer[];
   
   // アクション
   setActiveTab: (tab: Tab) => void;
   setSelectedCustomerIndex: (index: number) => void;
+  setCSVFiles: (spaFileName: string | null, torenaviFileName: string | null) => void;
   updateVisionData: (data: Partial<VisionData>) => void;
   updateCustomerData: (index: number, data: Partial<CustomerData>) => void;
+  updateBaseCustomer: (index: number, data: Partial<BaseCustomer>) => void;
   saveData: () => void;
 }
 
-export const useStore = create<AppState>()(
-  persist(
-    (set, get) => ({
+export const useStore = create<AppState>()((set, get) => ({
       // 初期状態
-      activeTab: 'vision',
+      activeTab: 'home',
       selectedCustomerIndex: 0,
+      
+      // CSVファイル状態
+      spaFileName: null,
+      torenaviFileName: null,
       
       visionData: {
         achieved: '',
@@ -76,7 +117,15 @@ export const useStore = create<AppState>()(
         memberExpectations: '',
       },
       
-      performanceData: {},
+      performanceData: {
+        targetAmount: 0,
+        currentAmount: 0,
+        cancelRisk: 0,
+        aYomiItems: [],
+        bYomiItems: [],
+        cYomiItems: [],
+        netaYomiItems: [],
+      },
       
       focusCustomers: [
         { 
@@ -140,12 +189,27 @@ export const useStore = create<AppState>()(
         },
       ],
       
-      baseCustomers: [],
+      baseCustomers: [
+        {
+          id: '1',
+          name: '株）グローバルシステムズ',
+          salesCount: '2,000',
+          yearTotal: '5,000',
+          term37: '11,000',
+          term38: '19,000',
+          currentStatus: '人事部長からHRシステム刷新の検討を進めたいという意向あり（感触良好）',
+          measures: '・定例報告会・研修実施\n・情報収集（新人入社予定人数・管理職研修ニーズ）',
+          focus: '・情報収集を通じて全社ニーズを把握\n・カウンターパートとの信頼関係構築',
+          monthlyPlans: {}
+        }
+      ],
       
       // アクション
       setActiveTab: (tab) => set({ activeTab: tab }),
       
       setSelectedCustomerIndex: (index) => set({ selectedCustomerIndex: index }),
+      
+      setCSVFiles: (spaFileName, torenaviFileName) => set({ spaFileName, torenaviFileName }),
       
       updateVisionData: (data) => set((state) => ({
         visionData: { ...state.visionData, ...data }
@@ -157,15 +221,15 @@ export const useStore = create<AppState>()(
         return { focusCustomers };
       }),
       
+      updateBaseCustomer: (index, data) => set((state) => {
+        const baseCustomers = [...state.baseCustomers];
+        baseCustomers[index] = { ...baseCustomers[index], ...data };
+        return { baseCustomers };
+      }),
+      
       saveData: () => {
-        // データは自動的に永続化されるので、ここでは保存成功のメッセージを表示するだけ
-        console.log('データを保存しました');
-        alert('データを保存しました');
+        console.log('データを保存しました（メモリ上）');
+        alert('データを保存しました（メモリ上に一時保存）');
       },
-    }),
-    {
-      name: 'eigyokeikaku-storage', // ローカルストレージのキー
-    }
-  )
-);
+    }));
 
