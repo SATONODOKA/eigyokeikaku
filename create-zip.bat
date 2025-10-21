@@ -22,6 +22,7 @@ echo Copying files...
 xcopy /E /I /Y "app" "%TEMPDIR%\app" >nul
 xcopy /E /I /Y "lib" "%TEMPDIR%\lib" >nul
 xcopy /E /I /Y "public" "%TEMPDIR%\public" >nul 2>nul
+copy /Y "セットアップ.bat" "%TEMPDIR%\" >nul
 copy /Y "起動.bat" "%TEMPDIR%\" >nul
 copy /Y "README.md" "%TEMPDIR%\" >nul
 copy /Y "package.json" "%TEMPDIR%\" >nul

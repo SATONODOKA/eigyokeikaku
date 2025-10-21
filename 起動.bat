@@ -13,10 +13,17 @@ echo.
 REM Node.jsがインストールされているか確認
 where node >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [エラー] Node.jsがインストールされていません。
     echo.
-    echo Node.jsをインストールしてください：
-    echo https://nodejs.org/
+    echo ========================================
+    echo   ❌ Node.jsがインストールされていません
+    echo ========================================
+    echo.
+    echo 初回起動の前に「セットアップ.bat」を実行してください。
+    echo.
+    echo セットアップ.batがNode.jsのインストール方法を案内します。
+    echo.
+    echo ※ このウィンドウを閉じて、
+    echo    「セットアップ.bat」をダブルクリックしてください
     echo.
     pause
     exit /b 1
