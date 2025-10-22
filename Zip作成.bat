@@ -8,7 +8,8 @@ echo ========================================
 echo.
 
 set DATE=%date:~0,4%%date:~5,2%%date:~8,2%
-set ZIPNAME=eigyokeikaku_v1.0.0_%DATE%.zip
+set VERSION=1.0.0
+set ZIPNAME=eigyokeikaku_v%VERSION%_%DATE%.zip
 
 REM Node.js Portableがあるか確認
 if not exist "nodejs-portable\node.exe" (
@@ -21,22 +22,6 @@ if not exist "nodejs-portable\node.exe" (
 )
 
 echo ✓ Node.js Portable: OK
-
-REM node_modulesの確認とインストール
-if not exist "node_modules\" (
-    echo.
-    echo ⚠️ node_modulesが見つかりません。インストールします...
-    echo.
-    call nodejs-portable\npm.cmd install
-    if %errorlevel% neq 0 (
-        echo.
-        echo ❌ npm installに失敗しました
-        pause
-        exit /b 1
-    )
-)
-
-echo ✓ node_modules: OK
 echo.
 echo パッケージを作成しています...
 echo.
@@ -65,8 +50,7 @@ echo Node.js Portableをコピー中...
 xcopy /E /I /Y "nodejs-portable" "%TEMPDIR%\nodejs-portable" >nul
 
 echo.
-echo node_modules（依存パッケージ）をコピー中...
-echo これには数分かかる場合があります...
+echo node_modulesをコピー中...
 xcopy /E /I /Y "node_modules" "%TEMPDIR%\node_modules" >nul
 
 echo.
