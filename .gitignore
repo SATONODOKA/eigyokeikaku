@@ -41,3 +41,8 @@ next-env.d.ts
 
 # serena
 /.serena
+
+# distribution package
+temp_package/
+eigyokeikaku_*.zip
+version.txt
