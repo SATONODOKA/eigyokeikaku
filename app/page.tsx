@@ -90,6 +90,12 @@ export default function Home() {
 function VisionTab() {
   const { visionData, updateVisionData, saveData } = useStore();
 
+  const handleTextareaResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  };
+
   return (
     <div className="h-[calc(100vh-140px)]">
       <div className="bg-white rounded-lg shadow p-3 h-full overflow-y-auto">
@@ -118,6 +124,7 @@ function VisionTab() {
                   rows={3}
                   placeholder="例：新規顧客3社獲得、既存顧客との関係強化、チーム目標達成"
                   value={visionData.achieved}
+                  onInput={handleTextareaResize}
                   onChange={(e) => updateVisionData({ achieved: e.target.value })}
                 />
               </div>
@@ -133,6 +140,7 @@ function VisionTab() {
                   rows={3}
                   placeholder="例：長期的な関係構築、戦略的提案の不足"
                   value={visionData.notAchieved}
+                  onInput={handleTextareaResize}
                   onChange={(e) => updateVisionData({ notAchieved: e.target.value })}
                 />
               </div>
@@ -150,6 +158,7 @@ function VisionTab() {
             rows={3}
             placeholder="例：顧客と長期的な信頼関係を築けるビジネスパートナーになる、戦略的な提案ができる営業のプロフェッショナルを目指す"
             value={visionData.futureGoal}
+            onInput={handleTextareaResize}
             onChange={(e) => updateVisionData({ futureGoal: e.target.value })}
           />
         </div>
@@ -164,6 +173,7 @@ function VisionTab() {
             rows={3}
             placeholder="例：顧客理解を深め、本質的な課題解決ができる力を身につける期にする"
             value={visionData.termMeaning}
+            onInput={handleTextareaResize}
             onChange={(e) => updateVisionData({ termMeaning: e.target.value })}
           />
         </div>
@@ -179,6 +189,7 @@ function VisionTab() {
               rows={4}
               placeholder="例：&#10;【定量】売上目標5,000万円達成、新規顧客5社獲得&#10;【定性】顧客との信頼関係構築、戦略的提案力の向上"
               value={visionData.quantitativeGoal}
+              onInput={handleTextareaResize}
               onChange={(e) => updateVisionData({ quantitativeGoal: e.target.value })}
             />
           </div>
@@ -191,6 +202,7 @@ function VisionTab() {
               rows={4}
               placeholder="例：月次での振り返り習慣化、顧客ニーズの深掘りヒアリング、業界動向の継続的なキャッチアップ"
               value={visionData.qualitativeGoal}
+              onInput={handleTextareaResize}
               onChange={(e) => updateVisionData({ qualitativeGoal: e.target.value })}
             />
           </div>
@@ -203,6 +215,7 @@ function VisionTab() {
               rows={4}
               placeholder="例：顧客視点で考える、長期的な関係を大切にする、チームで成果を出す"
               value={visionData.stance}
+              onInput={handleTextareaResize}
               onChange={(e) => updateVisionData({ stance: e.target.value })}
             />
           </div>
@@ -218,6 +231,7 @@ function VisionTab() {
             rows={4}
             placeholder="例：困ったときは相談してほしい、チームで情報共有を積極的にしたい、お互いの成長を支援し合いたい"
             value={visionData.memberExpectations}
+            onInput={handleTextareaResize}
             onChange={(e) => updateVisionData({ memberExpectations: e.target.value })}
           />
         </div>
@@ -372,13 +386,33 @@ function PerformanceSection({
 // Performance タブ
 function PerformanceTab() {
   const { performanceData, updatePerformanceData, saveData } = useStore();
+  const [activeSubTab, setActiveSubTab] = React.useState<'current' | 'next'>('current');
   const [targetAmount, setTargetAmount] = React.useState(performanceData.targetAmount);
   const [currentAmount, setCurrentAmount] = React.useState(performanceData.currentAmount);
   const [cancelRisk, setCancelRisk] = React.useState(performanceData.cancelRisk);
-  const [aYomiItems, setAYomiItems] = React.useState(performanceData.aYomiItems);
-  const [bYomiItems, setBYomiItems] = React.useState(performanceData.bYomiItems);
-  const [cYomiItems, setCYomiItems] = React.useState(performanceData.cYomiItems);
-  const [netaYomiItems, setNetaYomiItems] = React.useState(performanceData.netaYomiItems);
+  
+  // 今期売上
+  const [currentAYomiItems, setCurrentAYomiItems] = React.useState(performanceData.currentTermAYomi);
+  const [currentBYomiItems, setCurrentBYomiItems] = React.useState(performanceData.currentTermBYomi);
+  const [currentCYomiItems, setCurrentCYomiItems] = React.useState(performanceData.currentTermCYomi);
+  const [currentNetaItems, setCurrentNetaItems] = React.useState(performanceData.currentTermNeta);
+  
+  // 来期受注
+  const [nextAYomiItems, setNextAYomiItems] = React.useState(performanceData.nextTermAYomi);
+  const [nextBYomiItems, setNextBYomiItems] = React.useState(performanceData.nextTermBYomi);
+  const [nextCYomiItems, setNextCYomiItems] = React.useState(performanceData.nextTermCYomi);
+  const [nextNetaItems, setNextNetaItems] = React.useState(performanceData.nextTermNeta);
+  
+  // 現在のサブタブに応じた値を取得
+  const aYomiItems = activeSubTab === 'current' ? currentAYomiItems : nextAYomiItems;
+  const bYomiItems = activeSubTab === 'current' ? currentBYomiItems : nextBYomiItems;
+  const cYomiItems = activeSubTab === 'current' ? currentCYomiItems : nextCYomiItems;
+  const netaYomiItems = activeSubTab === 'current' ? currentNetaItems : nextNetaItems;
+  
+  const setAYomiItems = activeSubTab === 'current' ? setCurrentAYomiItems : setNextAYomiItems;
+  const setBYomiItems = activeSubTab === 'current' ? setCurrentBYomiItems : setNextBYomiItems;
+  const setCYomiItems = activeSubTab === 'current' ? setCurrentCYomiItems : setNextCYomiItems;
+  const setNetaYomiItems = activeSubTab === 'current' ? setCurrentNetaItems : setNextNetaItems;
 
   // ローカルstateの変更をZustandストアに自動同期
   React.useEffect(() => {
@@ -386,12 +420,16 @@ function PerformanceTab() {
       targetAmount,
       currentAmount,
       cancelRisk,
-      aYomiItems,
-      bYomiItems,
-      cYomiItems,
-      netaYomiItems
+      currentTermAYomi: currentAYomiItems,
+      currentTermBYomi: currentBYomiItems,
+      currentTermCYomi: currentCYomiItems,
+      currentTermNeta: currentNetaItems,
+      nextTermAYomi: nextAYomiItems,
+      nextTermBYomi: nextBYomiItems,
+      nextTermCYomi: nextCYomiItems,
+      nextTermNeta: nextNetaItems
     });
-  }, [targetAmount, currentAmount, cancelRisk, aYomiItems, bYomiItems, cYomiItems, netaYomiItems, updatePerformanceData]);
+  }, [targetAmount, currentAmount, cancelRisk, currentAYomiItems, currentBYomiItems, currentCYomiItems, currentNetaItems, nextAYomiItems, nextBYomiItems, nextCYomiItems, nextNetaItems, updatePerformanceData]);
 
   // 計算ロジック（treatAsAフラグを考慮）
   // A扱いされるB/C案件の合計
@@ -429,6 +467,30 @@ function PerformanceTab() {
                  >
                    保存
                  </button>
+        </div>
+
+        {/* サブタブ */}
+        <div className="flex border-b border-gray-200 mb-3">
+          <button
+            onClick={() => setActiveSubTab('current')}
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+              activeSubTab === 'current'
+                ? 'border-cyan-500 text-cyan-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            今期売上
+          </button>
+          <button
+            onClick={() => setActiveSubTab('next')}
+            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+              activeSubTab === 'next'
+                ? 'border-cyan-500 text-cyan-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            来期受注
+          </button>
         </div>
 
         {/* 目標設定 */}
@@ -1090,27 +1152,39 @@ function HomeTab() {
     setPerformanceItems,
     setBaseCustomers 
   } = useStore();
-  const [spaFile, setSpaFile] = React.useState<File | null>(null);
-  const [torenaviFile, setTorenaviFile] = React.useState<File | null>(null);
-  const spaInputRef = React.useRef<HTMLInputElement>(null);
-  const torenaviInputRef = React.useRef<HTMLInputElement>(null);
+  const [currentTermFile, setCurrentTermFile] = React.useState<File | null>(null);  // SPAデータ（今期売上）
+  const [nextTermFile, setNextTermFile] = React.useState<File | null>(null);  // SPAデータ（来期受注）
+  const [initialDataFile, setInitialDataFile] = React.useState<File | null>(null);  // 期初データ
+  const currentTermInputRef = React.useRef<HTMLInputElement>(null);
+  const nextTermInputRef = React.useRef<HTMLInputElement>(null);
+  const initialDataInputRef = React.useRef<HTMLInputElement>(null);
   const backupInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleSpaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCurrentTermUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-      setSpaFile(file);
-      setCSVFiles(file.name, torenaviFileName);
+      setCurrentTermFile(file);
+      console.log('SPAデータ（今期売上）選択:', file.name);
     } else if (file) {
       alert('Excelファイル（.xlsx）を選択してください');
     }
   };
 
-  const handleTorenaviUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNextTermUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-      setTorenaviFile(file);
-      setCSVFiles(spaFileName, file.name);
+      setNextTermFile(file);
+      console.log('SPAデータ（来期受注）選択:', file.name);
+    } else if (file) {
+      alert('Excelファイル（.xlsx）を選択してください');
+    }
+  };
+
+  const handleInitialDataUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+      setInitialDataFile(file);
+      console.log('期初データ選択:', file.name);
     } else if (file) {
       alert('Excelファイル（.xlsx）を選択してください');
     }
@@ -1120,9 +1194,9 @@ function HomeTab() {
     try {
       let successMessages: string[] = [];
 
-      // 1. 業績計画用レポート（SPAデータ）の処理
-      if (spaFile) {
-        const data = await spaFile.arrayBuffer();
+      // SPAデータ処理の共通関数
+      const processSPAData = async (file: File, termType: 'current' | 'next', label: string) => {
+        const data = await file.arrayBuffer();
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -1197,15 +1271,25 @@ function HomeTab() {
             bYomi: bYomiItems,
             cYomi: cYomiItems,
             neta: netaItems
-          });
+          }, termType);
 
-          successMessages.push(`②業績計画: Bヨミ${bYomiItems.length}件、Cヨミ${cYomiItems.length}件、ネタ${netaItems.length}件`);
+          successMessages.push(`②業績計画${label}: Aヨミ${aYomiItems.length}件、Bヨミ${bYomiItems.length}件、Cヨミ${cYomiItems.length}件、ネタ${netaItems.length}件`);
         }
+      };
+
+      // 1. SPAデータ（今期売上）の処理
+      if (currentTermFile) {
+        await processSPAData(currentTermFile, 'current', '（今期売上）');
       }
 
-      // 2. 期初データの処理
-      if (torenaviFile) {
-        const data = await torenaviFile.arrayBuffer();
+      // 2. SPAデータ（来期受注）の処理
+      if (nextTermFile) {
+        await processSPAData(nextTermFile, 'next', '（来期受注）');
+      }
+
+      // 3. 期初データの処理
+      if (initialDataFile) {
+        const data = await initialDataFile.arrayBuffer();
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -1365,7 +1449,8 @@ function HomeTab() {
 
       if (successMessages.length > 0) {
         alert(`✅ データを読み込みました！\n\n${successMessages.join('\n')}`);
-        setActiveTab(torenaviFile ? 'base' : 'performance');
+        // 期初データがあれば④重点外顧客タブへ、なければ②業績計画タブへ
+        setActiveTab(initialDataFile ? 'base' : 'performance');
       } else {
         alert('ファイルを選択してください');
       }
@@ -1390,26 +1475,27 @@ function HomeTab() {
     }
   };
 
-  const canExecute = spaFile !== null || torenaviFile !== null;
-  const displaySpaName = spaFile?.name || spaFileName;
-  const displayTorenaviName = torenaviFile?.name || torenaviFileName;
+  const canExecute = currentTermFile !== null || nextTermFile !== null || initialDataFile !== null;
+  const displayCurrentTermName = currentTermFile?.name;
+  const displayNextTermName = nextTermFile?.name;
+  const displayInitialDataName = initialDataFile?.name;
 
   return (
     <div className="h-[calc(100vh-140px)]">
       <div className="bg-white rounded-lg shadow p-6 h-full overflow-y-auto flex items-center justify-center">
         {/* Excelアップロードエリア */}
         <div className="space-y-4 max-w-2xl w-full">
-          {/* 業績計画用レポート（SPAデータ） */}
+          {/* SPAデータ（今期売上） */}
                         <div>
             <input
-              ref={spaInputRef}
+              ref={currentTermInputRef}
               type="file"
               accept=".xlsx,.xls"
-              onChange={handleSpaUpload}
+              onChange={handleCurrentTermUpload}
               className="hidden"
             />
             <button
-              onClick={() => spaInputRef.current?.click()}
+              onClick={() => currentTermInputRef.current?.click()}
               className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-3"
               style={{ 
                 backgroundColor: '#5CB3D6'
@@ -1421,22 +1507,49 @@ function HomeTab() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <span>
-                {displaySpaName ? `✓ ${displaySpaName}` : '業績計画用レポートを読み込む（Excel）'}
+                {displayCurrentTermName ? `✓ ${displayCurrentTermName}` : 'SPAデータ（今期売上）を読み込む'}
               </span>
             </button>
                         </div>
 
-          {/* 期初データ */}
+          {/* SPAデータ（来期受注） */}
                         <div>
             <input
-              ref={torenaviInputRef}
+              ref={nextTermInputRef}
               type="file"
               accept=".xlsx,.xls"
-              onChange={handleTorenaviUpload}
+              onChange={handleNextTermUpload}
               className="hidden"
             />
             <button
-              onClick={() => torenaviInputRef.current?.click()}
+              onClick={() => nextTermInputRef.current?.click()}
+              className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-3"
+              style={{ 
+                backgroundColor: '#5CB3D6'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4A9EC4'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#5CB3D6'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span>
+                {displayNextTermName ? `✓ ${displayNextTermName}` : 'SPAデータ（来期受注）を読み込む'}
+              </span>
+            </button>
+          </div>
+
+          {/* 期初データ */}
+          <div>
+            <input
+              ref={initialDataInputRef}
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleInitialDataUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => initialDataInputRef.current?.click()}
               className="w-full text-white font-medium py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-3"
               style={{ 
                 backgroundColor: '#52B788'
@@ -1448,7 +1561,7 @@ function HomeTab() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <span>
-                {displayTorenaviName ? `✓ ${displayTorenaviName}` : '期初データを読み込む（Excel）'}
+                {displayInitialDataName ? `✓ ${displayInitialDataName}` : '期初データを読み込む'}
               </span>
             </button>
                         </div>

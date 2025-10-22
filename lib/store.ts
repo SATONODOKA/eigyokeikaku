@@ -29,10 +29,16 @@ interface PerformanceData {
   targetAmount: number;
   currentAmount: number;
   cancelRisk: number;
-  aYomiItems: PerformanceItem[];
-  bYomiItems: PerformanceItem[];
-  cYomiItems: PerformanceItem[];
-  netaYomiItems: PerformanceItem[];
+  // 今期売上
+  currentTermAYomi: PerformanceItem[];
+  currentTermBYomi: PerformanceItem[];
+  currentTermCYomi: PerformanceItem[];
+  currentTermNeta: PerformanceItem[];
+  // 来期受注
+  nextTermAYomi: PerformanceItem[];
+  nextTermBYomi: PerformanceItem[];
+  nextTermCYomi: PerformanceItem[];
+  nextTermNeta: PerformanceItem[];
 }
 
 interface CustomerData {
@@ -137,7 +143,7 @@ interface AppState {
     bYomi: PerformanceItem[];
     cYomi: PerformanceItem[];
     neta: PerformanceItem[];
-  }) => void;
+  }, termType: 'current' | 'next') => void;
   saveData: () => void;
   exportData: () => void;
   importData: (jsonString: string) => void;
@@ -183,10 +189,16 @@ export const useStore = create<AppState>()(
         targetAmount: 0,
         currentAmount: 0,
         cancelRisk: 0,
-        aYomiItems: [],
-        bYomiItems: [],
-        cYomiItems: [],
-        netaYomiItems: [],
+        // 今期売上
+        currentTermAYomi: [],
+        currentTermBYomi: [],
+        currentTermCYomi: [],
+        currentTermNeta: [],
+        // 来期受注
+        nextTermAYomi: [],
+        nextTermBYomi: [],
+        nextTermCYomi: [],
+        nextTermNeta: [],
       },
       
       focusCustomers: [],
@@ -277,13 +289,20 @@ export const useStore = create<AppState>()(
         performanceData: { ...state.performanceData, ...data }
       })),
 
-      setPerformanceItems: (items) => set((state) => ({
+      setPerformanceItems: (items, termType) => set((state) => ({
         performanceData: {
           ...state.performanceData,
-          aYomiItems: items.aYomi,
-          bYomiItems: items.bYomi,
-          cYomiItems: items.cYomi,
-          netaYomiItems: items.neta,
+          ...(termType === 'current' ? {
+            currentTermAYomi: items.aYomi,
+            currentTermBYomi: items.bYomi,
+            currentTermCYomi: items.cYomi,
+            currentTermNeta: items.neta,
+          } : {
+            nextTermAYomi: items.aYomi,
+            nextTermBYomi: items.bYomi,
+            nextTermCYomi: items.cYomi,
+            nextTermNeta: items.neta,
+          })
         }
       })),
 
