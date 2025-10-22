@@ -17,6 +17,9 @@ set NPM_CMD=%NODE_DIR%\npm.cmd
 REM PATHを設定
 set PATH=%NODE_DIR%;%PATH%
 
+REM 企業ネットワーク対応（証明書エラー回避）
+set NODE_TLS_REJECT_UNAUTHORIZED=0
+
 REM node_modulesが存在しない場合はインストール
 if not exist "node_modules\" (
     echo.
@@ -26,6 +29,8 @@ if not exist "node_modules\" (
     echo.
     echo 依存パッケージをインストールしています...
     echo インターネット接続が必要です。通常3〜5分かかります。
+    echo.
+    echo ※ 企業ネットワーク環境に対応しています（証明書検証を無効化）
     echo.
     echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     echo   ※ 進捗は下記に表示されます ※
