@@ -470,27 +470,29 @@ function PerformanceTab() {
         </div>
 
         {/* サブタブ */}
-        <div className="flex border-b border-gray-200 mb-3">
-          <button
-            onClick={() => setActiveSubTab('current')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeSubTab === 'current'
-                ? 'border-cyan-500 text-cyan-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            今期売上
-          </button>
-          <button
-            onClick={() => setActiveSubTab('next')}
-            className={`py-2 px-4 text-sm font-medium border-b-2 transition-colors ${
-              activeSubTab === 'next'
-                ? 'border-cyan-500 text-cyan-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            来期受注
-          </button>
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex bg-gray-100 rounded-xl p-1.5 shadow-inner">
+            <button
+              onClick={() => setActiveSubTab('current')}
+              className={`py-3 px-8 text-base font-bold rounded-lg transition-all ${
+                activeSubTab === 'current'
+                  ? 'bg-white text-cyan-600 shadow-md'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              今期売上
+            </button>
+            <button
+              onClick={() => setActiveSubTab('next')}
+              className={`py-3 px-8 text-base font-bold rounded-lg transition-all ${
+                activeSubTab === 'next'
+                  ? 'bg-white text-cyan-600 shadow-md'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              来期受注
+            </button>
+          </div>
         </div>
 
         {/* 目標設定 */}
@@ -1484,9 +1486,26 @@ function HomeTab() {
     <div className="h-[calc(100vh-140px)]">
       <div className="bg-white rounded-lg shadow p-6 h-full overflow-y-auto flex items-center justify-center">
         {/* Excelアップロードエリア */}
-        <div className="space-y-4 max-w-2xl w-full">
+        <div className="space-y-6 max-w-2xl w-full">
+          {/* 説明文 */}
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800">営業計画を使いやすくするツール</h2>
+            <div className="text-left bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-700 mb-2 font-medium">使い方</p>
+              <ol className="text-sm text-gray-600 space-y-1.5">
+                <li>1. SPAからレポートを出力</li>
+                <li>2. 期初データをコピー</li>
+                <li>3. 2つをセットして実行ボタンを押す</li>
+                <li>4. 自由に編集・保存する</li>
+              </ol>
+              <p className="text-xs text-gray-500 mt-3">
+                ※本ツールはデータをインターネット上に公開することはありません
+              </p>
+            </div>
+          </div>
+
           {/* SPAデータ（今期売上） */}
-                        <div>
+          <div>
             <input
               ref={currentTermInputRef}
               type="file"
@@ -1567,21 +1586,23 @@ function HomeTab() {
                         </div>
 
           {/* 実行ボタン */}
-          <button
-            onClick={handleExecute}
-            disabled={!canExecute}
-            className={`w-full font-medium py-4 px-6 rounded-lg transition-all ${
-              canExecute 
-                ? 'cursor-pointer hover:bg-gray-400' 
-                : 'cursor-not-allowed'
-            }`}
-            style={{ 
-              backgroundColor: canExecute ? '#D1D5DB' : '#E5E7EB',
-              color: canExecute ? '#374151' : '#9CA3AF'
-            }}
-          >
-            {canExecute ? '✅ 実行：データを読み込む' : 'Excelファイルを選択してください'}
-          </button>
+          <div className="pt-4">
+            <button
+              onClick={handleExecute}
+              disabled={!canExecute}
+              className={`w-full font-bold text-lg py-6 px-8 rounded-xl transition-all shadow-lg ${
+                canExecute 
+                  ? 'cursor-pointer hover:shadow-xl transform hover:scale-[1.02]' 
+                  : 'cursor-not-allowed'
+              }`}
+              style={{ 
+                backgroundColor: canExecute ? '#2563EB' : '#E5E7EB',
+                color: canExecute ? '#FFFFFF' : '#9CA3AF'
+              }}
+            >
+              {canExecute ? '実行：データを読み込む' : 'Excelファイルを選択してください'}
+            </button>
+          </div>
 
           {/* バックアップ機能 */}
           <div className="pt-6 mt-8 border-t border-gray-200">
@@ -1621,16 +1642,6 @@ function HomeTab() {
             <p className="text-xs text-gray-500 text-center mt-3">
               定期的にバックアップを保存し、ローカルフォルダに保管することをお勧めします
             </p>
-                </div>
-
-          {/* 注意書き */}
-          <div className="pt-4 mt-6">
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span>データはブラウザにローカル保存されます</span>
-            </div>
           </div>
         </div>
       </div>
