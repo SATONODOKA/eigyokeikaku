@@ -40,28 +40,22 @@ echo   ファイルコピー中...
 echo ========================================
 echo.
 
-echo [1/6] アプリケーション本体をコピー中...
-xcopy /E /I /Y /Q "app" "%TEMPDIR%\app" >nul 2>&1
-xcopy /E /I /Y /Q "lib" "%TEMPDIR%\lib" >nul 2>&1
-xcopy /E /I /Y /Q "public" "%TEMPDIR%\public" >nul 2>&1
+echo [1/5] ビルド済みアプリケーション（.next）をコピー中...
+xcopy /E /I /Y /Q ".next" "%TEMPDIR%\.next" >nul 2>&1
 echo       ✅ 完了
 
-echo [2/6] 設定ファイルをコピー中...
+echo [2/5] 必須設定ファイルをコピー中...
 copy /Y "start.bat" "%TEMPDIR%\" >nul
-copy /Y "README.md" "%TEMPDIR%\" >nul
 copy /Y "package.json" "%TEMPDIR%\" >nul
 copy /Y "package-lock.json" "%TEMPDIR%\" >nul
 copy /Y "next.config.mjs" "%TEMPDIR%\" >nul
-copy /Y "tailwind.config.ts" "%TEMPDIR%\" >nul
-copy /Y "tsconfig.json" "%TEMPDIR%\" >nul
-copy /Y "postcss.config.js" "%TEMPDIR%\" >nul
 echo       ✅ 完了
 
-echo [3/6] Node.js Portableをコピー中...
+echo [3/5] Node.js Portableをコピー中...
 xcopy /E /I /Y /Q "nodejs-portable" "%TEMPDIR%\nodejs-portable" >nul 2>&1
 echo       ✅ 完了
 
-echo [4/6] node_modules（依存パッケージ）をコピー中...
+echo [4/5] node_modules（依存パッケージ）をコピー中...
 echo       これには数分かかります。お待ちください...
 xcopy /E /I /Y /Q "node_modules" "%TEMPDIR%\node_modules" >nul 2>&1
 echo       ✅ 完了
@@ -73,11 +67,9 @@ echo   Zipファイル作成中...
 echo ========================================
 echo.
 
-echo [5/6] 古いZipファイルを削除中...
+echo [5/5] 圧縮処理を実行中...
+echo       古いZipファイルを削除中...
 if exist "%ZIPNAME%" del /F /Q "%ZIPNAME%" >nul 2>&1
-echo       ✅ 完了
-
-echo [6/6] 圧縮処理を実行中...
 echo       これには数分かかります。お待ちください...
 
 REM PowerShellで圧縮（7zipがあれば7zipを使う）
@@ -121,10 +113,11 @@ echo.
 echo ========================================
 echo   配布パッケージ内容
 echo ========================================
+echo - .next フォルダ （ビルド済みアプリ）
 echo - Node.js Portable （実行環境）
 echo - node_modules （依存パッケージ）
 echo - start.bat （起動スクリプト）
-echo - アプリケーション本体
+echo - package.json / next.config.mjs （設定）
 echo.
 echo 配布先での使い方：
 echo   1. Zipを解凍

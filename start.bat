@@ -65,5 +65,5 @@ REM ブラウザを開く
 timeout /t 3 /nobreak >nul
 start http://localhost:3000
 
-REM サーバー起動
-call "%NPM_CMD%" run dev
+REM サーバー起動（本番モード）
+call "%NPM_CMD%" start
