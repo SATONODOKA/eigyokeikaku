@@ -21,6 +21,22 @@ if not exist "nodejs-portable\node.exe" (
 )
 
 echo ✓ Node.js Portable: OK
+
+REM node_modulesの確認とインストール
+if not exist "node_modules\" (
+    echo.
+    echo ⚠️ node_modulesが見つかりません。インストールします...
+    echo.
+    call nodejs-portable\npm.cmd install
+    if %errorlevel% neq 0 (
+        echo.
+        echo ❌ npm installに失敗しました
+        pause
+        exit /b 1
+    )
+)
+
+echo ✓ node_modules: OK
 echo.
 echo パッケージを作成しています...
 echo.
@@ -47,6 +63,11 @@ copy /Y ".gitignore" "%TEMPDIR%\" >nul
 echo.
 echo Node.js Portableをコピー中...
 xcopy /E /I /Y "nodejs-portable" "%TEMPDIR%\nodejs-portable" >nul
+
+echo.
+echo node_modules（依存パッケージ）をコピー中...
+echo これには数分かかる場合があります...
+xcopy /E /I /Y "node_modules" "%TEMPDIR%\node_modules" >nul
 
 echo.
 echo Zipファイルを作成中...
@@ -76,11 +97,20 @@ echo サイズ: %FILESIZE_MB% MB
 echo.
 echo このZipファイルには：
 echo - Node.js Portable （インストール不要）
-echo - 起動.bat （ダブルクリックで起動）
+echo - node_modules （依存パッケージ同梱）
+echo - 起動.bat （ダブルクリックで即起動）
 echo - 営業計画管理システム本体
 echo が含まれています。
 echo.
-echo 配布先では解凍して「起動.bat」をダブルクリックするだけで使えます。
+echo ★ 配布先での使い方：
+echo   1. Zipを解凍
+echo   2. 「起動.bat」をダブルクリック
+echo   3. すぐにブラウザが開きます（インストール不要！）
+echo.
+echo ★ メリット：
+echo   - インターネット接続不要
+echo   - ファイアウォール/プロキシ関係なし
+echo   - 待ち時間なし（即起動）
 echo.
 pause
 
