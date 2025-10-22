@@ -38,9 +38,17 @@ interface PerformanceData {
 interface CustomerData {
   id: string;
   name: string;
-  relationLevel: string;
-  quantitativeGoal: string;
-  qualitativeGoal: string;
+  // 中長期の目指す状態
+  threeYearGoal: string;
+  oneYearGoal: string;
+  termGoalPeople: string;      // 今半期のゴール（人・関係性）
+  termGoalBusiness: string;    // 今半期のゴール（取引）
+  // 今半期の営業活動の焦点
+  currentSituation: string;    // 現状を直視する
+  termKeyPoint: string;        // この半期の肝はココ
+  currentOpportunities: string; // 現時点で持っている機会
+  termScenario: string;        // 今期のゴールに向けた大きなシナリオ
+  // 月次計画
   monthlyPlans: {
     [month: string]: {
       goal: string;
@@ -48,18 +56,28 @@ interface CustomerData {
     };
   };
   termReview: string;
-  events: Array<{
+  // 取引履歴（期初データから自動生成）
+  transactionHistory: Array<{
+    date: string;        // 受注年月（4桁：YYMM）
+    period: string;      // 期ラベル（例：「37上」）
+    productName: string; // 商品名
+    amount: number;      // 取引額（千円）
+  }>;
+  // 互換性のため残す（非推奨）
+  events?: Array<{
     date: string;
     type: string;
     content: string;
     source: string;
   }>;
+  relationLevel?: string;
+  quantitativeGoal?: string;
+  qualitativeGoal?: string;
 }
 
 interface BaseCustomer {
   id: string;
   name: string;
-  employeeCount: string;  // 総従業員数
   // CSV読み込み項目（実績 - 半期ごとの売上実績）
   record36First: string;   // 36上
   record36Second: string;  // 36下
@@ -67,6 +85,16 @@ interface BaseCustomer {
   record37Second: string;  // 37下
   record38First: string;   // 38上
   record38Second: string;  // 38下
+  // 受注済み額
+  order37Second: string;   // 37下期受注済
+  order38First: string;    // 38上期受注済
+  // 取引履歴（期初データから自動生成）
+  transactionHistory: Array<{
+    date: string;        // 受注年月（4桁：YYMM）
+    period: string;      // 期ラベル（例：「37上」）
+    productName: string; // 商品名
+    amount: number;      // 取引額（千円）
+  }>;
   // 手入力項目
   term37Target: string;
   term38Target: string;
@@ -100,7 +128,16 @@ interface AppState {
   updateBaseCustomer: (index: number, data: Partial<BaseCustomer>) => void;
   addBaseCustomer: () => void;
   deleteBaseCustomer: (index: number) => void;
+  setBaseCustomers: (customers: BaseCustomer[]) => void;
+  addFocusCustomerFromBase: (baseCustomer: BaseCustomer) => void;
+  deleteFocusCustomer: (index: number) => void;
   updatePerformanceData: (data: Partial<PerformanceData>) => void;
+  setPerformanceItems: (items: {
+    aYomi: PerformanceItem[];
+    bYomi: PerformanceItem[];
+    cYomi: PerformanceItem[];
+    neta: PerformanceItem[];
+  }) => void;
   saveData: () => void;
   exportData: () => void;
   importData: (jsonString: string) => void;
@@ -152,58 +189,7 @@ export const useStore = create<AppState>()(
         netaYomiItems: [],
       },
       
-      focusCustomers: [
-        { 
-          id: '1', 
-          name: '顧客A', 
-          relationLevel: 'level1', 
-          quantitativeGoal: '', 
-          qualitativeGoal: '', 
-          monthlyPlans: {}, 
-          termReview: '', 
-          events: []
-        },
-        { 
-          id: '2', 
-          name: '顧客B', 
-          relationLevel: 'level1', 
-          quantitativeGoal: '', 
-          qualitativeGoal: '', 
-          monthlyPlans: {}, 
-          termReview: '', 
-          events: []
-        },
-        { 
-          id: '3', 
-          name: '顧客C', 
-          relationLevel: 'level1', 
-          quantitativeGoal: '', 
-          qualitativeGoal: '', 
-          monthlyPlans: {}, 
-          termReview: '', 
-          events: []
-        },
-        { 
-          id: '4', 
-          name: '顧客D', 
-          relationLevel: 'level1', 
-          quantitativeGoal: '', 
-          qualitativeGoal: '', 
-          monthlyPlans: {}, 
-          termReview: '', 
-          events: []
-        },
-        { 
-          id: '5', 
-          name: '顧客E', 
-          relationLevel: 'level1', 
-          quantitativeGoal: '', 
-          qualitativeGoal: '', 
-          monthlyPlans: {}, 
-          termReview: '', 
-          events: []
-        },
-      ],
+      focusCustomers: [],
       
       baseCustomers: [],
       
@@ -234,13 +220,15 @@ export const useStore = create<AppState>()(
         const newCustomer: BaseCustomer = {
           id: Date.now().toString(),
           name: '',
-          employeeCount: '',
           record36First: '',
           record36Second: '',
           record37First: '',
           record37Second: '',
           record38First: '',
           record38Second: '',
+          order37Second: '',
+          order38First: '',
+          transactionHistory: [],
           term37Target: '',
           term38Target: '',
           targetState: '',
@@ -255,8 +243,48 @@ export const useStore = create<AppState>()(
         baseCustomers: state.baseCustomers.filter((_, i) => i !== index)
       })),
 
+      setBaseCustomers: (customers) => set({ baseCustomers: customers }),
+
+      addFocusCustomerFromBase: (baseCustomer) => set((state) => {
+        // ④重点外顧客のデータを③重点顧客の形式に変換
+        const newFocusCustomer: CustomerData = {
+          id: baseCustomer.id,
+          name: baseCustomer.name,
+          threeYearGoal: '',
+          oneYearGoal: '',
+          termGoalPeople: '',
+          termGoalBusiness: '',
+          currentSituation: '',
+          termKeyPoint: '',
+          currentOpportunities: '',
+          termScenario: '',
+          monthlyPlans: {},
+          termReview: '',
+          transactionHistory: baseCustomer.transactionHistory || []
+        };
+        return { focusCustomers: [...state.focusCustomers, newFocusCustomer] };
+      }),
+
+      deleteFocusCustomer: (index) => set((state) => {
+        const newFocusCustomers = state.focusCustomers.filter((_, i) => i !== index);
+        return {
+          focusCustomers: newFocusCustomers,
+          selectedCustomerIndex: Math.max(0, Math.min(state.selectedCustomerIndex, newFocusCustomers.length - 1))
+        };
+      }),
+
       updatePerformanceData: (data) => set((state) => ({
         performanceData: { ...state.performanceData, ...data }
+      })),
+
+      setPerformanceItems: (items) => set((state) => ({
+        performanceData: {
+          ...state.performanceData,
+          aYomiItems: items.aYomi,
+          bYomiItems: items.bYomi,
+          cYomiItems: items.cYomi,
+          netaYomiItems: items.neta,
+        }
       })),
 
       saveData: () => {

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useStore } from "@/lib/store";
+import * as XLSX from 'xlsx';
 
 export default function Home() {
   const { activeTab, setActiveTab } = useStore();
@@ -293,7 +294,6 @@ function PerformanceSection({
               {showTreatAsA && <th className="border px-2 py-1 text-center font-medium w-16">A扱い</th>}
               <th className="border px-2 py-1 text-left font-medium">社名</th>
               <th className="border px-2 py-1 text-left font-medium">案件</th>
-              <th className="border px-2 py-1 text-center font-medium">確度</th>
               <th className="border px-2 py-1 text-right font-medium">金額</th>
               <th className="border px-2 py-1 text-center font-medium">受注予定日</th>
               <th className="border px-2 py-1 text-center font-medium w-16">操作</th>
@@ -331,14 +331,6 @@ function PerformanceSection({
                 </td>
                 <td className="border px-2 py-1">
                   <input
-                    type="text"
-                    value={item.probability}
-                    onChange={(e) => updateRow(index, 'probability', e.target.value)}
-                    className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-blue-500 rounded text-center"
-                  />
-                </td>
-                <td className="border px-2 py-1">
-                  <input
                     type="number"
                     value={item.amount || ''}
                     onChange={(e) => updateRow(index, 'amount', Number(e.target.value))}
@@ -365,7 +357,7 @@ function PerformanceSection({
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={showTreatAsA ? 7 : 6} className="border px-2 py-4 text-center text-gray-400 text-xs">
+                <td colSpan={showTreatAsA ? 6 : 5} className="border px-2 py-4 text-center text-gray-400 text-xs">
                   データがありません。「+ 行追加」ボタンで追加するか、CSVファイルを読み込んでください。
                 </td>
               </tr>
@@ -565,65 +557,47 @@ function PerformanceTab() {
 
 // Focus タブ
 function FocusTab() {
-  const { focusCustomers, selectedCustomerIndex, setSelectedCustomerIndex, updateCustomerData, saveData } = useStore();
+  const { focusCustomers, selectedCustomerIndex, setSelectedCustomerIndex, updateCustomerData, deleteFocusCustomer, saveData } = useStore();
   const months = ["10月", "11月", "12月", "1月", "2月", "3月"];
+  
+  // 顧客が登録されていない場合
+  if (focusCustomers.length === 0) {
+    return (
+      <div className="h-[calc(100vh-140px)]">
+        <div className="bg-white rounded-lg shadow p-6 h-full flex flex-col items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📋</div>
+            <h3 className="text-xl font-bold text-gray-700 mb-2">まだ重点顧客が登録されていません</h3>
+            <p className="text-gray-500 text-sm mb-4">
+              ④重点外顧客タブから「重点顧客にする」ボタンで追加できます
+            </p>
+            <div className="mt-6 p-4 bg-teal-50 rounded-lg text-left max-w-md">
+              <p className="text-xs text-gray-600 mb-2">💡 使い方：</p>
+              <ol className="text-xs text-gray-600 space-y-1">
+                <li>1. ④重点外顧客タブを開く</li>
+                <li>2. 重点的に管理したい顧客の行にある「重点顧客にする」ボタンをクリック</li>
+                <li>3. この画面（③重点顧客）に追加されます</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   const currentCustomer = focusCustomers[selectedCustomerIndex];
   
-  const [showEventModal, setShowEventModal] = React.useState(false);
-  const [editingEventIndex, setEditingEventIndex] = React.useState<number | null>(null);
-  const [newEventDate, setNewEventDate] = React.useState('');
-  const [newEventType, setNewEventType] = React.useState('面談');
-  const [newEventContent, setNewEventContent] = React.useState('');
-
-  const handleAddEvent = () => {
-    if (!newEventDate || !newEventContent) {
-      alert('日付と内容を入力してください');
-      return;
-    }
-    
-    if (editingEventIndex !== null) {
-      // 編集モード
-      const updatedEvents = [...currentCustomer.events];
-      updatedEvents[editingEventIndex] = {
-        date: newEventDate,
-        type: newEventType,
-        content: newEventContent,
-        source: updatedEvents[editingEventIndex].source || '手動追加'
-      };
-      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
-    } else {
-      // 新規追加モード
-      const newEvent = {
-        date: newEventDate,
-        type: newEventType,
-        content: newEventContent,
-        source: '手動追加'
-      };
-      const updatedEvents = [...currentCustomer.events, newEvent];
-      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
-    }
-    
-    // フォームをリセット
-    setNewEventDate('');
-    setNewEventType('面談');
-    setNewEventContent('');
-    setEditingEventIndex(null);
-    setShowEventModal(false);
+  // textarea自動リサイズ
+  const handleTextareaResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const target = e.currentTarget;
+    target.style.height = 'auto';
+    target.style.height = target.scrollHeight + 'px';
   };
-
-  const handleEditEvent = (index: number) => {
-    const event = currentCustomer.events[index];
-    setNewEventDate(event.date);
-    setNewEventType(event.type);
-    setNewEventContent(event.content);
-    setEditingEventIndex(index);
-    setShowEventModal(true);
-  };
-
-  const handleDeleteEvent = (index: number) => {
-    if (confirm('このイベントを削除してもよろしいですか？')) {
-      const updatedEvents = currentCustomer.events.filter((_, i) => i !== index);
-      updateCustomerData(selectedCustomerIndex, { events: updatedEvents });
+  
+  // 重点顧客を削除
+  const handleDeleteCustomer = () => {
+    if (confirm(`${currentCustomer.name}を重点顧客から削除しますか？`)) {
+      deleteFocusCustomer(selectedCustomerIndex);
     }
   };
 
@@ -632,14 +606,15 @@ function FocusTab() {
       <div className="bg-white rounded-lg shadow h-full flex flex-col">
         {/* 顧客タブ */}
         <div className="border-b flex-shrink-0">
-          <div className="flex space-x-1 px-4 pt-3">
+          <div className="flex items-center justify-between px-4 pt-3">
+            <div className="flex space-x-1">
             {focusCustomers.map((customer, index) => (
               <div key={index} className="relative group">
               <button
                 onClick={() => setSelectedCustomerIndex(index)}
                 className={`px-3 py-1.5 rounded-t-lg font-medium text-sm ${
                   selectedCustomerIndex === index
-                    ? "bg-cyan-500 text-white"
+                        ? "bg-teal-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -650,117 +625,205 @@ function FocusTab() {
                     type="text"
                     value={customer.name}
                     onChange={(e) => updateCustomerData(index, { name: e.target.value })}
-                    className="absolute top-0 left-0 w-full px-3 py-1.5 rounded-t-lg font-medium text-sm bg-cyan-500 text-white border-0 focus:outline-none focus:ring-2 focus:ring-cyan-600 opacity-0 hover:opacity-100 focus:opacity-100"
+                      className="absolute top-0 left-0 w-full px-3 py-1.5 rounded-t-lg font-medium text-sm bg-teal-500 text-white border-0 focus:outline-none focus:ring-2 focus:ring-teal-600 opacity-0 hover:opacity-100 focus:opacity-100"
                     placeholder="顧客名"
                   />
                 )}
               </div>
             ))}
           </div>
-        </div>
+            <div className="flex gap-2 mb-1">
+                      <button
+                onClick={handleDeleteCustomer}
+                className="px-3 py-1 text-xs text-red-600 hover:bg-red-50 rounded border border-red-300"
+                      >
+                削除
+                      </button>
+                      <button
+                onClick={saveData}
+                className="px-3 py-1 text-xs bg-teal-600 text-white rounded hover:bg-teal-700"
+                      >
+                保存
+                      </button>
+                </div>
+              </div>
+                </div>
 
-        {/* 2カラムレイアウト - レスポンシブ対応 */}
-        <div className="flex-1 grid lg:grid-cols-3 md:grid-cols-5 grid-cols-1 gap-0 overflow-hidden">
-          {/* 左側：過去イベント履歴（lg:1/3, md:2/5, sm:全幅） */}
-          <div className="lg:col-span-1 md:col-span-2 border-r flex flex-col overflow-hidden">
-            <div className="p-3 border-b bg-gray-50 flex-shrink-0">
-              <h3 className="font-semibold text-sm">過去イベント・活動履歴</h3>
-              <p className="text-xs text-gray-500 mt-1">これを見ながら右側に計画を記入→</p>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {/* イベント履歴を動的に表示 */}
-              {currentCustomer.events.map((event, idx) => (
-                <div key={idx} className="border rounded p-2 bg-white text-xs group hover:border-cyan-300">
-                <div className="flex justify-between items-start mb-1">
-                    <span className="font-semibold">{event.date}</span>
-                    <div className="flex items-center gap-1">
-                      <span className="px-1.5 py-0.5 rounded text-xs bg-cyan-100 text-cyan-800">
-                        {event.type}
-                      </span>
-                      <button
-                        onClick={() => handleEditEvent(idx)}
-                        className="px-2 py-0.5 text-[10px] text-blue-600 hover:bg-blue-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="編集"
-                      >
-                        編集
-                      </button>
-                      <button
-                        onClick={() => handleDeleteEvent(idx)}
-                        className="px-2 py-0.5 text-[10px] text-red-600 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="削除"
-                      >
-                        削除
-                      </button>
-                </div>
+        {/* 2カラムレイアウト */}
+        <div className="flex-1 grid lg:grid-cols-2 grid-cols-1 gap-0 overflow-hidden">
+          {/* 左側：中長期 + 今半期ゴール + 営業活動の焦点 */}
+          <div className="border-r flex flex-col overflow-y-auto p-4 space-y-4">
+            {/* 左上：中長期の目指す状態 */}
+            <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
+              <h3 className="font-semibold text-sm text-teal-900 mb-3">中長期の目指す状態</h3>
+              
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">3年後</label>
+                  <textarea
+                    value={currentCustomer.threeYearGoal || ''}
+                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { threeYearGoal: e.target.value })}
+                    onInput={handleTextareaResize}
+                    className="w-full p-2 text-xs border border-teal-200 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden bg-white"
+                    rows={2}
+                    placeholder="3年後の目指す状態..."
+                  />
               </div>
-                  <p className="text-gray-700">{event.content}</p>
-                </div>
-              ))}
-              {currentCustomer.events.length === 0 && (
-              <div className="text-center text-gray-400 text-xs mt-4 py-4 border-t">
-                CSV読み込みで自動反映されます
-              </div>
-              )}
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">1年後</label>
+                  <textarea
+                    value={currentCustomer.oneYearGoal || ''}
+                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { oneYearGoal: e.target.value })}
+                    onInput={handleTextareaResize}
+                    className="w-full p-2 text-xs border border-teal-200 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden bg-white"
+                    rows={2}
+                    placeholder="1年後の目指す状態..."
+                  />
             </div>
-            <div className="p-2 border-t bg-gray-50 flex-shrink-0">
-              <button 
-                onClick={() => setShowEventModal(true)}
-                className="w-full px-3 py-1.5 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700"
-              >
-                + イベント手動追加
-              </button>
             </div>
           </div>
 
-          {/* 右側：計画入力エリア（lg:2/3, md:3/5, sm:全幅） */}
-          <div className="lg:col-span-2 md:col-span-3 flex flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
-              <h2 className="text-lg font-bold text-gray-900">③重点顧客の活動計画</h2>
-
-              {/* 基本情報 */}
+            {/* 左中：今半期のゴール状態をイメージ */}
+            <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
+              <h3 className="text-sm font-semibold text-teal-900 mb-3">今半期のゴール状態をイメージ</h3>
+              
               <div className="space-y-2">
-                <div className="grid lg:grid-cols-2 md:grid-cols-1 grid-cols-1 gap-2">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">関係性レベル</label>
-                    <select 
-                      className="w-full p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                      value={currentCustomer.relationLevel}
-                      onChange={(e) => updateCustomerData(selectedCustomerIndex, { relationLevel: e.target.value })}
-                    >
-                      <option value="level1">レベル1：面識あり</option>
-                      <option value="level2">レベル2：定期的な接点</option>
-                      <option value="level3">レベル3：信頼関係構築</option>
-                      <option value="level4">レベル4：戦略的パートナー</option>
-                  </select>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">① 人・関係性</label>
+                  <textarea
+                    value={currentCustomer.termGoalPeople || ''}
+                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { termGoalPeople: e.target.value })}
+                    onInput={handleTextareaResize}
+                    className="w-full p-2 text-xs border border-teal-200 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden bg-white"
+                    rows={2}
+                    placeholder="人材開発部の●●様と継続的な接点を持ち、信頼関係を構築..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">② 取引</label>
+                  <textarea
+                    value={currentCustomer.termGoalBusiness || ''}
+                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { termGoalBusiness: e.target.value })}
+                    onInput={handleTextareaResize}
+                    className="w-full p-2 text-xs border border-teal-200 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden bg-white"
+                    rows={2}
+                    placeholder="新規部署への提案2件、契約額500万円以上..."
+                  />
+                </div>
                 </div>
                 </div>
                 
-                {/* 目標（定量・定性）を統合 */}
+            {/* 左下：今半期の営業活動の焦点 */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-gray-900">今半期の営業活動の焦点</h3>
+              
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">目標（定量・定性）</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">現状を直視する</label>
                   <textarea
-                    className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500"
-                    placeholder="【定量】売上 5,000万円、案件数3件、新規部署への提案2件&#10;【定性】役員との関係構築、信頼関係の深化"
-                    rows={4}
-                    value={currentCustomer.quantitativeGoal}
-                    onChange={(e) => updateCustomerData(selectedCustomerIndex, { quantitativeGoal: e.target.value })}
+                  value={currentCustomer.currentSituation || ''}
+                  onChange={(e) => updateCustomerData(selectedCustomerIndex, { currentSituation: e.target.value })}
+                  onInput={handleTextareaResize}
+                  className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                  rows={2}
+                  placeholder="連続合計5,000万以上の取引があるが..."
                   />
                 </div>
+              
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">この半期の肝はココ</label>
+                <textarea
+                  value={currentCustomer.termKeyPoint || ''}
+                  onChange={(e) => updateCustomerData(selectedCustomerIndex, { termKeyPoint: e.target.value })}
+                  onInput={handleTextareaResize}
+                  className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                  rows={2}
+                  placeholder="年末年始を挟む＆報告会..."
+                />
               </div>
 
-              {/* 月次計画（コンパクトに） */}
               <div>
-                <h3 className="text-sm font-semibold mb-2">月次計画</h3>
+                <label className="block text-xs font-medium text-gray-700 mb-1">現時点で持っている機会</label>
+                <textarea
+                  value={currentCustomer.currentOpportunities || ''}
+                  onChange={(e) => updateCustomerData(selectedCustomerIndex, { currentOpportunities: e.target.value })}
+                  onInput={handleTextareaResize}
+                  className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                  rows={2}
+                  placeholder="人材開発部門の●●課長と接点がある..."
+                />
+              </div>
+              
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">今期のゴールに向けた大きなシナリオ</label>
+                <textarea
+                  value={currentCustomer.termScenario || ''}
+                  onChange={(e) => updateCustomerData(selectedCustomerIndex, { termScenario: e.target.value })}
+                  onInput={handleTextareaResize}
+                  className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                  rows={3}
+                  placeholder="ゴールされた奇跡の成果を分かりポイントゴールに向けたシナリオを記入..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 右側：過去イベント履歴 + 月次計画 */}
+          <div className="flex flex-col overflow-hidden">
+            {/* 右上：過去イベント履歴（固定高） */}
+            <div className="h-64 flex flex-col border-b">
+              <div className="p-3 border-b bg-gray-50 flex-shrink-0">
+                <h3 className="font-semibold text-sm">過去イベント・活動履歴</h3>
+                <p className="text-xs text-gray-500 mt-1">直近1年分（37上・37下）の受注履歴</p>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {/* 取引履歴をカード形式で表示（直近1年分のみ） */}
+              {(currentCustomer.transactionHistory || [])
+                .filter(tx => tx.period.includes('37'))  // 37上・37下のみ表示
+                .map((tx, idx) => (
+                  <div key={idx} className="border rounded-lg p-2 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    {/* 1行目：受注年月 + 期ラベル */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-xs font-mono text-gray-600">{tx.date}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                        tx.period.includes('上') ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                      }`}>
+                        {tx.period}
+                      </span>
+                    </div>
+                    {/* 2行目：商品名と取引額 */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-800 font-medium truncate flex-1">{tx.productName || '商品名なし'}</span>
+                      <span className="text-xs font-bold text-gray-900 ml-2">{tx.amount.toLocaleString()}</span>
+                    </div>
+                  </div>
+                ))}
+              {(currentCustomer.transactionHistory || []).filter(tx => tx.period.includes('37')).length === 0 && (
+                <div className="text-center text-gray-400 text-xs mt-8 py-4">
+                  <p>直近1年分の取引履歴はありません</p>
+                  <p className="text-[10px] mt-1">期初データ読み込みで自動反映されます</p>
+                </div>
+              )}
+            </div>
+            </div>
+
+            {/* 右下：月次計画（たっぷりスペース） */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-4">月次計画</h3>
                 <div className="space-y-2">
                   {months.map((month) => (
-                    <div key={month} className="border rounded p-2 bg-gray-50">
-                      <div className="font-semibold text-sm mb-1.5">{month}</div>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div key={month} className="border rounded p-3 bg-gray-50">
+                      <div className="font-semibold text-sm mb-2">{month}</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">目標・アクション</label>
                         <textarea
-                          className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                          rows={3}
-                          placeholder="目標・アクション"
+                            className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                            rows={2}
+                            placeholder="このを月に行うこと..."
                           value={currentCustomer.monthlyPlans[month]?.goal || ''}
+                            onInput={handleTextareaResize}
                           onChange={(e) => updateCustomerData(selectedCustomerIndex, {
                             monthlyPlans: {
                               ...currentCustomer.monthlyPlans,
@@ -771,11 +834,15 @@ function FocusTab() {
                             }
                           })}
                         />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">振り返り</label>
                         <textarea
-                          className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                          rows={3}
-                          placeholder="振り返り"
+                            className="w-full p-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 resize-none overflow-hidden"
+                            rows={2}
+                            placeholder="月末に振り返りを記入..."
                           value={currentCustomer.monthlyPlans[month]?.reflection || ''}
+                            onInput={handleTextareaResize}
                           onChange={(e) => updateCustomerData(selectedCustomerIndex, {
                             monthlyPlans: {
                               ...currentCustomer.monthlyPlans,
@@ -786,123 +853,44 @@ function FocusTab() {
                             }
                           })}
                         />
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-
-              {/* 今期の振り返り */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">今期の振り返り（期末に記入）</label>
-                <textarea
-                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                  rows={4}
-                  placeholder="期末に今期全体の振り返りを記入してください"
-                  value={currentCustomer.termReview}
-                  onChange={(e) => updateCustomerData(selectedCustomerIndex, { termReview: e.target.value })}
-                />
-              </div>
-            </div>
-
-            {/* 保存ボタン */}
-            <div className="p-3 border-t bg-gray-50 flex justify-end flex-shrink-0">
-              <button 
-                onClick={saveData}
-            className="px-6 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              >
-                保存
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* イベント追加モーダル */}
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold mb-4 text-gray-900">イベント手動追加</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  日付 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  value={newEventDate}
-                  onChange={(e) => setNewEventDate(e.target.value)}
-                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  タイプ
-                </label>
-                <select
-                  value={newEventType}
-                  onChange={(e) => setNewEventType(e.target.value)}
-                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-                >
-                  <option value="面談">面談</option>
-                  <option value="研修">研修</option>
-                  <option value="提案">提案</option>
-                  <option value="訪問">訪問</option>
-                  <option value="電話">電話</option>
-                  <option value="その他">その他</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  内容 <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  value={newEventContent}
-                  onChange={(e) => setNewEventContent(e.target.value)}
-                  className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500"
-                  rows={4}
-                  placeholder="イベントの詳細を入力してください..."
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowEventModal(false);
-                  setNewEventDate('');
-                  setNewEventType('面談');
-                  setNewEventContent('');
-                }}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={handleAddEvent}
-                className="px-4 py-2 text-sm text-white bg-cyan-600 rounded hover:bg-cyan-700"
-              >
-                追加
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 // Base タブ
 function BaseTab() {
-  const { baseCustomers, updateBaseCustomer, addBaseCustomer, deleteBaseCustomer, saveData } = useStore();
+  const { baseCustomers, updateBaseCustomer, addBaseCustomer, deleteBaseCustomer, addFocusCustomerFromBase, saveData, setActiveTab } = useStore();
 
   const handleDeleteCustomer = (index: number) => {
     if (confirm('この顧客を削除してもよろしいですか？')) {
       deleteBaseCustomer(index);
     }
+  };
+
+  const handlePromoteToFocus = (index: number) => {
+    const customer = baseCustomers[index];
+    if (confirm(`${customer.name}を重点顧客に追加しますか？`)) {
+      addFocusCustomerFromBase(customer);
+      alert(`${customer.name}を③重点顧客の活動計画に追加しました！`);
+      setActiveTab('focus');
+    }
+  };
+
+  // テキストエリアの高さを自動調整
+  const handleTextareaResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const target = e.currentTarget;
+    target.style.height = 'auto';
+    target.style.height = target.scrollHeight + 'px';
   };
 
   return (
@@ -928,29 +916,28 @@ function BaseTab() {
 
         {/* テーブル形式 */}
         <div className="flex-1 overflow-auto">
-          <table className="w-full text-xs border-collapse border">
-            <thead className="bg-cyan-50 sticky top-0">
+          <table className="text-xs border-collapse border min-w-max">
+            <thead className="bg-cyan-50 sticky top-0 z-10">
               <tr>
-                <th className="border px-2 py-1 text-left font-medium w-32" rowSpan={2}>社名</th>
-                <th className="border px-1 py-1 text-center font-medium w-16" rowSpan={2}>総従業員数</th>
+                <th className="border px-2 py-1 text-left font-medium w-40" rowSpan={2}>社名</th>
                 <th className="border px-2 py-1 text-center font-medium bg-gray-100" colSpan={6}>実績（期初データより）</th>
                 <th className="border px-2 py-1 text-center font-medium" colSpan={2}>受注済み額</th>
                 <th className="border px-2 py-1 text-center font-medium" colSpan={3}>今期の目指す状態</th>
-                <th className="border px-2 py-1 text-center font-medium" rowSpan={2}>半期後の<br/>振り返り</th>
+                <th className="border px-2 py-1 text-center font-medium w-80" rowSpan={2}>半期後の<br/>振り返り</th>
                 <th className="border px-1 py-1 text-center font-medium w-16" rowSpan={2}>操作</th>
               </tr>
               <tr>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">36上</th>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">36下</th>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">37上</th>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">37下</th>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">38上</th>
-                <th className="border px-1 py-1 text-center text-[10px] bg-gray-100 w-14">38下</th>
-                <th className="border px-1 py-1 text-center text-[10px] w-14">37下期受注済</th>
-                <th className="border px-1 py-1 text-center text-[10px] w-14">38上期受注済</th>
-                <th className="border px-1 py-1 text-left text-[10px]">どんな状態に<br/>なっていればOK</th>
-                <th className="border px-1 py-1 text-left text-[10px]">今ある商品<br/>・商談</th>
-                <th className="border px-1 py-1 text-left text-[10px]">活動の<br/>焦点</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">36上</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">36下</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">37上</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">37下</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">38上</th>
+                <th className="border px-1 py-1 text-center text-xs bg-gray-100 w-16">38下</th>
+                <th className="border px-1 py-1 text-center text-xs w-16">37下期<br/>受注済</th>
+                <th className="border px-1 py-1 text-center text-xs w-16">38上期<br/>受注済</th>
+                <th className="border px-2 py-1 text-left text-xs w-80">どんな状態に<br/>なっていればOK</th>
+                <th className="border px-2 py-1 text-left text-xs w-80">今ある商品<br/>・商談</th>
+                <th className="border px-2 py-1 text-left text-xs w-80">活動の<br/>焦点</th>
               </tr>
             </thead>
             <tbody>
@@ -958,105 +945,75 @@ function BaseTab() {
                 <tr key={customer.id} className="hover:bg-gray-50">
                   {/* 社名 */}
                   <td className="border px-2 py-1">
-                  <input 
-                    type="text" 
+                    <textarea 
                     value={customer.name}
                       onChange={(e) => updateBaseCustomer(customerIndex, { name: e.target.value })}
-                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded bg-cyan-50"
-                      placeholder="社名（CSV読み込み）"
-                    />
-                  </td>
-                  {/* 総従業員数 */}
-                  <td className="border px-1 py-1">
-                    <input 
-                      type="text"
-                      value={customer.employeeCount}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-center bg-gray-100"
-                      readOnly
+                      onInput={handleTextareaResize}
+                      className="w-full px-2 py-1 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded bg-cyan-50 resize-none overflow-hidden"
+                      rows={2}
+                      placeholder="社名"
                     />
                   </td>
                   {/* 実績（半期ごと） */}
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record36First}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record36First}
+                    </div>
                   </td>
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record36Second}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record36Second}
+                    </div>
                   </td>
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record37First}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record37First}
+                    </div>
                   </td>
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record37Second}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record37Second}
+                    </div>
                   </td>
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record38First}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record38First}
+                    </div>
                   </td>
                   <td className="border px-1 py-1 bg-gray-50">
-                    <input 
-                      type="text"
-                      value={customer.record38Second}
-                      className="w-full px-1 py-0.5 text-xs border-0 text-right bg-gray-100"
-                      readOnly
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-gray-100">
+                      {customer.record38Second}
+                    </div>
                   </td>
-                  {/* 今期目標 */}
+                  {/* 受注済み額 */}
                   <td className="border px-1 py-1">
-                    <input 
-                      type="text"
-                      value={customer.term37Target}
-                      onChange={(e) => updateBaseCustomer(customerIndex, { term37Target: e.target.value })}
-                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded text-right"
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-yellow-50">
+                      {customer.order37Second}
+                    </div>
                   </td>
                   <td className="border px-1 py-1">
-                    <input 
-                      type="text"
-                      value={customer.term38Target}
-                      onChange={(e) => updateBaseCustomer(customerIndex, { term38Target: e.target.value })}
-                      className="w-full px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded text-right"
-                    />
+                    <div className="w-full px-1 py-1 text-xs text-right bg-yellow-50">
+                      {customer.order38First}
+                    </div>
                   </td>
-                  {/* 今期の目指す状態 - 幅を広く */}
+                  {/* 今期の目指す状態 */}
                   <td className="border px-2 py-1">
                   <textarea 
                       value={customer.targetState}
                       onChange={(e) => updateBaseCustomer(customerIndex, { targetState: e.target.value })}
-                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
-                    rows={2}
-                      placeholder="どんな状態に..."
+                      onInput={handleTextareaResize}
+                      className="w-full px-2 py-1 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none overflow-hidden"
+                      rows={3}
+                      placeholder="どんな状態になっていればOK..."
                   />
                   </td>
                   <td className="border px-2 py-1">
                   <textarea 
                       value={customer.currentProducts}
                       onChange={(e) => updateBaseCustomer(customerIndex, { currentProducts: e.target.value })}
-                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
-                    rows={2}
+                      onInput={handleTextareaResize}
+                      className="w-full px-2 py-1 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none overflow-hidden"
+                      rows={3}
                       placeholder="今ある商品・商談..."
                   />
                   </td>
@@ -1064,8 +1021,9 @@ function BaseTab() {
                   <textarea 
                       value={customer.activityFocus}
                       onChange={(e) => updateBaseCustomer(customerIndex, { activityFocus: e.target.value })}
-                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
-                    rows={2}
+                      onInput={handleTextareaResize}
+                      className="w-full px-2 py-1 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none overflow-hidden"
+                      rows={3}
                       placeholder="活動の焦点..."
                     />
                   </td>
@@ -1074,20 +1032,30 @@ function BaseTab() {
                     <textarea 
                       value={customer.termReview}
                       onChange={(e) => updateBaseCustomer(customerIndex, { termReview: e.target.value })}
-                      className="w-64 px-1 py-0.5 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none"
-                      rows={2}
+                      onInput={handleTextareaResize}
+                      className="w-full px-2 py-1 text-xs border-0 focus:ring-1 focus:ring-cyan-500 rounded resize-none overflow-hidden"
+                      rows={3}
                       placeholder="半期後の振り返り..."
                     />
                   </td>
                   {/* 操作ボタン */}
                   <td className="border px-1 py-1 text-center">
+                    <div className="flex flex-col gap-1">
                     <button
                       onClick={() => handleDeleteCustomer(customerIndex)}
-                      className="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded"
+                        className="px-2 py-1 text-xs text-red-600 hover:bg-red-50 rounded whitespace-nowrap"
                       title="削除"
                     >
                       削除
                     </button>
+                      <button
+                        onClick={() => handlePromoteToFocus(customerIndex)}
+                        className="px-2 py-1 text-xs text-cyan-600 hover:bg-cyan-50 rounded whitespace-nowrap"
+                        title="重点顧客にする"
+                      >
+                        重点顧客<br/>にする
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1112,7 +1080,16 @@ function BaseTab() {
 // Secondary: #3B8FA3 (深い青緑)
 // Accent: #52B788 (トレナビグリーン)
 function HomeTab() {
-  const { spaFileName, torenaviFileName, setActiveTab, setCSVFiles, exportData, importData } = useStore();
+  const { 
+    spaFileName, 
+    torenaviFileName, 
+    setActiveTab, 
+    setCSVFiles, 
+    exportData, 
+    importData,
+    setPerformanceItems,
+    setBaseCustomers 
+  } = useStore();
   const [spaFile, setSpaFile] = React.useState<File | null>(null);
   const [torenaviFile, setTorenaviFile] = React.useState<File | null>(null);
   const spaInputRef = React.useRef<HTMLInputElement>(null);
@@ -1121,31 +1098,281 @@ function HomeTab() {
 
   const handleSpaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.name.endsWith('.csv')) {
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
       setSpaFile(file);
       setCSVFiles(file.name, torenaviFileName);
     } else if (file) {
-      alert('CSVファイルを選択してください');
+      alert('Excelファイル（.xlsx）を選択してください');
     }
   };
 
   const handleTorenaviUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.name.endsWith('.csv')) {
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
       setTorenaviFile(file);
       setCSVFiles(spaFileName, file.name);
     } else if (file) {
-      alert('CSVファイルを選択してください');
+      alert('Excelファイル（.xlsx）を選択してください');
     }
   };
 
-  const handleExecute = () => {
-    if (spaFile && torenaviFile) {
-      console.log('CSVファイルを処理:', { spa: spaFile.name, torenavi: torenaviFile.name });
-      setCSVFiles(spaFile.name, torenaviFile.name);
-      // TODO: CSV処理ロジックを実装
-      alert('データの読み込みを開始します\n（現在は機能未実装）');
-      setActiveTab('vision');
+  const handleExecute = async () => {
+    try {
+      let successMessages: string[] = [];
+
+      // 1. 業績計画用レポート（SPAデータ）の処理
+      if (spaFile) {
+        const data = await spaFile.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // ヘッダー行を探す（15行目付近）
+        let headerRowIndex = -1;
+        for (let i = 0; i < Math.min(20, jsonData.length); i++) {
+          const row = jsonData[i];
+          if (row && typeof row[1] === 'string' && row[1].includes('営業担当者')) {
+            headerRowIndex = i;
+            break;
+          }
+        }
+
+        if (headerRowIndex !== -1) {
+          const dataRows = jsonData.slice(headerRowIndex + 1);
+          const aYomiItems: any[] = [];
+          const bYomiItems: any[] = [];
+          const cYomiItems: any[] = [];
+          const netaItems: any[] = [];
+
+          dataRows.forEach((row: any) => {
+            if (!row || row.length < 8) return;
+            
+            const company = row[4] || '';
+            const project = row[5] || '';
+            const probability = row[6] || '';
+            const amountStr = row[7] || '';
+            const expectedDate = row[8] || '';
+
+            if (!company && !project && !probability) return;
+
+            let amount = 0;
+            if (amountStr) {
+              const numStr = String(amountStr).replace(/[^0-9]/g, '');
+              amount = numStr ? parseInt(numStr, 10) : 0;
+            }
+
+            let formattedDate = '';
+            if (expectedDate) {
+              if (typeof expectedDate === 'number') {
+                const date = XLSX.SSF.parse_date_code(expectedDate);
+                formattedDate = `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
+              } else if (typeof expectedDate === 'string') {
+                formattedDate = expectedDate.replace(/\//g, '-');
+              }
+            }
+
+            const item = {
+              id: `${Date.now()}-${Math.random()}`,
+              company,
+              project,
+              amount,
+              expectedDate: formattedDate
+            };
+
+            const prob = String(probability).toLowerCase();
+            if (prob.includes('aヨミ') || prob.includes('a ヨミ')) {
+              aYomiItems.push(item);
+            } else if (prob.includes('bヨミ') || prob.includes('b ヨミ')) {
+              bYomiItems.push(item);
+            } else if (prob.includes('cヨミ') || prob.includes('c ヨミ')) {
+              cYomiItems.push(item);
+            } else if (prob.includes('ネタ') || prob.includes('ねた')) {
+              netaItems.push(item);
+            }
+          });
+
+          setPerformanceItems({
+            aYomi: aYomiItems,
+            bYomi: bYomiItems,
+            cYomi: cYomiItems,
+            neta: netaItems
+          });
+
+          successMessages.push(`②業績計画: Bヨミ${bYomiItems.length}件、Cヨミ${cYomiItems.length}件、ネタ${netaItems.length}件`);
+        }
+      }
+
+      // 2. 期初データの処理
+      if (torenaviFile) {
+        const data = await torenaviFile.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        console.log('📊 Excelファイル読み込み開始（セルアドレス方式）');
+        
+        // セルから期ラベルを取得（5行目 = row 5）
+        const periodLabels = {
+          m: worksheet['M5']?.v || '36上',
+          n: worksheet['N5']?.v || '36下',
+          o: worksheet['O5']?.v || '37上',
+          p: worksheet['P5']?.v || '37下',
+          q: worksheet['Q5']?.v || '38上',
+          r: worksheet['R5']?.v || '38下'
+        };
+        
+        console.log('📊 期ラベル:', periodLabels);
+        
+        // worksheet.['!ref']から最終行を取得
+        const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+        const lastRow = range.e.r; // 最終行番号（0始まり）
+        
+        console.log('📊 データ行数:', lastRow - 4);
+        
+        // 会社名ごとにデータを集計 + 取引履歴
+        const companyData: Map<string, {
+          m: number[], n: number[], o: number[], p: number[], q: number[], r: number[],
+          transactions: Array<{ date: string, period: string, productName: string, amount: number }>
+        }> = new Map();
+
+        // 6行目から最終行までループ（row 6 = インデックス5）
+        for (let rowIdx = 5; rowIdx <= lastRow; rowIdx++) {
+          const rowNum = rowIdx + 1; // Excelの行番号（1始まり）
+          
+          // セルアドレスでデータを取得
+          const companyName = worksheet[`F${rowNum}`]?.v || '';
+          if (!companyName || companyName === '-') continue;
+
+          const productName = worksheet[`K${rowNum}`]?.v || '';
+
+          // M～R列の金額データ
+          const m = Number(worksheet[`M${rowNum}`]?.v) || 0;
+          const n = Number(worksheet[`N${rowNum}`]?.v) || 0;
+          const o = Number(worksheet[`O${rowNum}`]?.v) || 0;
+          const p = Number(worksheet[`P${rowNum}`]?.v) || 0;
+          const q = Number(worksheet[`Q${rowNum}`]?.v) || 0;
+          const r = Number(worksheet[`R${rowNum}`]?.v) || 0;
+
+          // AA～AF列の受注年月
+          const dateM = String(worksheet[`AA${rowNum}`]?.v || '');
+          const dateN = String(worksheet[`AB${rowNum}`]?.v || '');
+          const dateO = String(worksheet[`AC${rowNum}`]?.v || '');
+          const dateP = String(worksheet[`AD${rowNum}`]?.v || '');
+          const dateQ = String(worksheet[`AE${rowNum}`]?.v || '');
+          const dateR = String(worksheet[`AF${rowNum}`]?.v || '');
+
+          // デバッグ: 最初の3行のみログ出力
+          if (rowIdx <= 7) {
+            console.log(`📊 行${rowNum}:`, {
+              companyName,
+              productName,
+              amounts: { m, n, o, p, q, r }
+            });
+            console.log(`  dates:`, `M=${dateM}, N=${dateN}, O=${dateO}, P=${dateP}, Q=${dateQ}, R=${dateR}`);
+            
+            // 実際に生成されるカードを確認
+            const cards = [];
+            if (m > 0 && dateM && dateM !== '-') cards.push(`${periodLabels.m}:${productName}:${dateM}:${m}`);
+            if (n > 0 && dateN && dateN !== '-') cards.push(`${periodLabels.n}:${productName}:${dateN}:${n}`);
+            if (o > 0 && dateO && dateO !== '-') cards.push(`${periodLabels.o}:${productName}:${dateO}:${o}`);
+            if (p > 0 && dateP && dateP !== '-') cards.push(`${periodLabels.p}:${productName}:${dateP}:${p}`);
+            if (q > 0 && dateQ && dateQ !== '-') cards.push(`${periodLabels.q}:${productName}:${dateQ}:${q}`);
+            if (r > 0 && dateR && dateR !== '-') cards.push(`${periodLabels.r}:${productName}:${dateR}:${r}`);
+            if (cards.length > 0) {
+              console.log(`  生成されるカード:`, cards);
+            } else {
+              console.log(`  生成されるカード: なし（条件不一致）`);
+            }
+          }
+
+          if (!companyData.has(companyName)) {
+            companyData.set(companyName, { m: [], n: [], o: [], p: [], q: [], r: [], transactions: [] });
+          }
+
+          const company = companyData.get(companyName)!;
+          company.m.push(m);
+          company.n.push(n);
+          company.o.push(o);
+          company.p.push(p);
+          company.q.push(q);
+          company.r.push(r);
+
+          // 取引履歴を追加（金額があり、受注年月がある場合のみ、かつ"-"でない場合）
+          if (m > 0 && dateM && dateM !== '-') company.transactions.push({ date: dateM, period: periodLabels.m, productName: productName || '商品名なし', amount: m });
+          if (n > 0 && dateN && dateN !== '-') company.transactions.push({ date: dateN, period: periodLabels.n, productName: productName || '商品名なし', amount: n });
+          if (o > 0 && dateO && dateO !== '-') company.transactions.push({ date: dateO, period: periodLabels.o, productName: productName || '商品名なし', amount: o });
+          if (p > 0 && dateP && dateP !== '-') company.transactions.push({ date: dateP, period: periodLabels.p, productName: productName || '商品名なし', amount: p });
+          if (q > 0 && dateQ && dateQ !== '-') company.transactions.push({ date: dateQ, period: periodLabels.q, productName: productName || '商品名なし', amount: q });
+          if (r > 0 && dateR && dateR !== '-') company.transactions.push({ date: dateR, period: periodLabels.r, productName: productName || '商品名なし', amount: r });
+        }
+
+        // デバッグ: 取引履歴の確認
+        console.log('📊 会社別取引履歴の数:');
+        companyData.forEach((data, companyName) => {
+          console.log(`  ${companyName}: ${data.transactions.length}件`);
+          if (data.transactions.length > 0) {
+            console.log('    最初の取引:', data.transactions[0]);
+          }
+        });
+
+        // BaseCustomerリストを作成
+        const baseCustomers: any[] = [];
+        companyData.forEach((data, companyName) => {
+          const sumM = data.m.reduce((a, b) => a + b, 0);
+          const sumN = data.n.reduce((a, b) => a + b, 0);
+          const sumO = data.o.reduce((a, b) => a + b, 0);
+          const sumP = data.p.reduce((a, b) => a + b, 0);
+          const sumQ = data.q.reduce((a, b) => a + b, 0);
+          const sumR = data.r.reduce((a, b) => a + b, 0);
+
+          // 取引履歴を新しい順にソート（YYMM形式なので数値比較）
+          const sortedTransactions = data.transactions.sort((a, b) => {
+            const dateA = parseInt(a.date) || 0;
+            const dateB = parseInt(b.date) || 0;
+            return dateB - dateA;  // 新しい順
+          });
+
+          baseCustomers.push({
+            id: `${Date.now()}-${Math.random()}`,
+            name: companyName,
+            record36First: String(sumM),    // 36上
+            record36Second: String(sumN),   // 36下
+            record37First: String(sumO),    // 37上
+            record37Second: String(sumP),   // 37下
+            record38First: String(sumQ),    // 38上
+            record38Second: String(sumR),   // 38下
+            order37Second: String(sumP),    // 37下期受注済
+            order38First: String(sumQ),     // 38上期受注済
+            transactionHistory: sortedTransactions,
+            term37Target: '',
+            term38Target: '',
+            targetState: '',
+            currentProducts: '',
+            activityFocus: '',
+            termReview: ''
+          });
+        });
+
+        console.log('📊 BaseCustomers作成完了:', baseCustomers.length, '社');
+        if (baseCustomers.length > 0) {
+          console.log('📊 最初の顧客の取引履歴:', baseCustomers[0].transactionHistory);
+        }
+
+        setBaseCustomers(baseCustomers);
+        successMessages.push(`④重点外顧客: ${baseCustomers.length}社`);
+      }
+
+      if (successMessages.length > 0) {
+        alert(`✅ データを読み込みました！\n\n${successMessages.join('\n')}`);
+        setActiveTab(torenaviFile ? 'base' : 'performance');
+      } else {
+        alert('ファイルを選択してください');
+      }
+
+    } catch (error) {
+      console.error('Excelファイルの読み込みエラー:', error);
+      alert('Excelファイルの読み込みに失敗しました。\n正しい形式のファイルを選択してください。');
     }
   };
 
@@ -1163,21 +1390,21 @@ function HomeTab() {
     }
   };
 
-  const canExecute = (spaFile !== null || spaFileName !== null) && (torenaviFile !== null || torenaviFileName !== null);
+  const canExecute = spaFile !== null || torenaviFile !== null;
   const displaySpaName = spaFile?.name || spaFileName;
   const displayTorenaviName = torenaviFile?.name || torenaviFileName;
 
   return (
     <div className="h-[calc(100vh-140px)]">
       <div className="bg-white rounded-lg shadow p-6 h-full overflow-y-auto flex items-center justify-center">
-        {/* CSVアップロードエリア */}
+        {/* Excelアップロードエリア */}
         <div className="space-y-4 max-w-2xl w-full">
-          {/* SPAデータ */}
+          {/* 業績計画用レポート（SPAデータ） */}
                         <div>
             <input
               ref={spaInputRef}
               type="file"
-              accept=".csv"
+              accept=".xlsx,.xls"
               onChange={handleSpaUpload}
               className="hidden"
             />
@@ -1194,17 +1421,17 @@ function HomeTab() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <span>
-                {displaySpaName ? `✓ ${displaySpaName}` : 'SPAデータを読み込む'}
+                {displaySpaName ? `✓ ${displaySpaName}` : '業績計画用レポートを読み込む（Excel）'}
               </span>
             </button>
                         </div>
 
-          {/* トレナビデータ */}
+          {/* 期初データ */}
                         <div>
             <input
               ref={torenaviInputRef}
               type="file"
-              accept=".csv"
+              accept=".xlsx,.xls"
               onChange={handleTorenaviUpload}
               className="hidden"
             />
@@ -1221,7 +1448,7 @@ function HomeTab() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <span>
-                {displayTorenaviName ? `✓ ${displayTorenaviName}` : 'トレナビデータを読み込む'}
+                {displayTorenaviName ? `✓ ${displayTorenaviName}` : '期初データを読み込む（Excel）'}
               </span>
             </button>
                         </div>
@@ -1232,7 +1459,7 @@ function HomeTab() {
             disabled={!canExecute}
             className={`w-full font-medium py-4 px-6 rounded-lg transition-all ${
               canExecute 
-                ? 'cursor-pointer' 
+                ? 'cursor-pointer hover:bg-gray-400' 
                 : 'cursor-not-allowed'
             }`}
             style={{ 
@@ -1240,7 +1467,7 @@ function HomeTab() {
               color: canExecute ? '#374151' : '#9CA3AF'
             }}
           >
-            {canExecute ? '実行' : '2つのCSVファイルを選択してください'}
+            {canExecute ? '✅ 実行：データを読み込む' : 'Excelファイルを選択してください'}
           </button>
 
           {/* バックアップ機能 */}
@@ -1276,12 +1503,12 @@ function HomeTab() {
                   </svg>
                   <span>バックアップから復元</span>
                 </button>
-              </div>
-            </div>
+                      </div>
+                    </div>
             <p className="text-xs text-gray-500 text-center mt-3">
               定期的にバックアップを保存し、ローカルフォルダに保管することをお勧めします
             </p>
-          </div>
+                </div>
 
           {/* 注意書き */}
           <div className="pt-4 mt-6">
